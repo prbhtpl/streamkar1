@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "740598670099",
+    "project_id": "v-star-f1044",
+    "storage_bucket": "v-star-f1044.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740598670099:android:20efe34cdb33da7adab0e6",
+        "android_client_info": {
+          "package_name": "com.example.vastar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "740598670099-8vk8pdj1iomqgq2cb2h1oicd2q73cjrf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCH12peHHxoHc_o89oL-FDLYH8kF0xkjME"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740598670099-8vk8pdj1iomqgq2cb2h1oicd2q73cjrf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
