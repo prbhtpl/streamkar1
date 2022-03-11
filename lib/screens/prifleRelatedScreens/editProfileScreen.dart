@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:untitled/bottomNavigationBar/bottomNavigation.dart';
 import 'package:untitled/helper/constants.dart';
 import 'package:untitled/helper/helperFunctions.dart';
 import 'package:untitled/screens/prifleRelatedScreens/profileScreen.dart';
@@ -41,7 +42,7 @@ class _EditProfileState extends State<EditProfile> {
                   onPressed: () {
                     setState(() {
                       Navigator.pop(context);
-                      pickCameraImage();
+                    //  pickCameraImage();
                     });
                   },
                   child: Row(
@@ -64,7 +65,7 @@ class _EditProfileState extends State<EditProfile> {
                   onPressed: () {
                     setState(() {
                       Navigator.pop(context);
-                      pickGalleryImage();
+                    //  pickGalleryImage();
                     });
                   },
                   child: Row(
@@ -125,7 +126,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    inputData();
+                   // inputData();
                     Navigator.pop(context);
                   },
                   child: Text(
@@ -234,7 +235,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Future pickGalleryImage() async {
+  /*Future pickGalleryImage() async {
     ImagePicker _picker = ImagePicker();
 
     await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
@@ -262,7 +263,7 @@ class _EditProfileState extends State<EditProfile> {
     Constants.profilePicUrl =
         await HelperFunctions.getuserProfilePicSharedPreference();
     setState(() {
-      /*loading=true;*/
+      *//*loading=true;*//*
     });
   }
 
@@ -270,7 +271,7 @@ class _EditProfileState extends State<EditProfile> {
     String? fileName = Uuid().v1();
     int status = 1;
 
-    /*await Firestore.instance
+    *//*await Firestore.instance
         .collection('chatroom')
         .document(widget.chatRoomId)
         .collection('chats')
@@ -280,7 +281,7 @@ class _EditProfileState extends State<EditProfile> {
       "message": "",
       "type": "img",
       "time": FieldValue.serverTimestamp(),
-    });*/
+    });*//*
 
     var ref = FirebaseStorage.instance
         .ref()
@@ -312,11 +313,11 @@ class _EditProfileState extends State<EditProfile> {
     HelperFunctions.saveuserUpdatedNameSharedPreference(EditedName.text);
     Constants.updatedName =
         await HelperFunctions.getUpdateNameSharedPreference();
-  }
+  }*/
 
   @override
   void initState() {
-    refreshingUrl();
+   // refreshingUrl();
 
     print(Constants.updatedName);
     setState(() {
@@ -354,7 +355,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
               onTap: () {
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => ProfileScreen()));
+                    MaterialPageRoute(builder: (context) => BottomNavigation(screenId: 4,)));
               },
             )),
           )
@@ -379,7 +380,7 @@ class _EditProfileState extends State<EditProfile> {
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(100),
-                      border: Border.all(color: Colors.blue, width: 4),
+                      border: Border.all(color: Colors.blue, width: 1),
                     ),
                     child: ClipOval(
                         child: loading == false
@@ -387,8 +388,8 @@ class _EditProfileState extends State<EditProfile> {
                                 child: CircularProgressIndicator(),
                               )
                             : Image.network(
-                                Constants.profilePicUrl.toString(),
-                                fit: BoxFit.fill,
+                             'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
+                                fit: BoxFit.cover,
                               )),
                   ),
                   SizedBox(

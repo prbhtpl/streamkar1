@@ -229,7 +229,7 @@ Container(height:MediaQuery.of(context).size.height,child: ListView.builder(
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.all(10.0),
-                                    child: Text('Report issue to Notifications Team this notification'),
+                                    child: Text('Report issue to Notifications Team'),
                                   ),
                                 ],
                               ),

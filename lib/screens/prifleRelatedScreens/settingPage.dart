@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:untitled/screens/inboxPages/inboxSettingScreen.dart';
 import 'package:untitled/screens/loginPage.dart';
+import 'package:untitled/screens/prifleRelatedScreens/editProfileScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/lnguagesScreen.dart';
-import 'package:untitled/screens/prifleRelatedScreens/securityPage.dart';
+import 'package:untitled/screens/prifleRelatedScreens/privacyPages/privacyScreen.dart';
+import 'package:untitled/screens/prifleRelatedScreens/securityPages/securityPage.dart';
 
 import '../../helper/authenticate.dart';
 import '../../services/auth.dart';
@@ -42,7 +44,30 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          children: [
+          children: [  InkWell(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile()));
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Edit Profile',
+
+                  ),
+                  Icon(CupertinoIcons.right_chevron)
+                ],
+              ),
+            ),
+          ),
+            Divider(
+              color: Colors.grey.shade100,
+
+              thickness: 6,
+              height: 10,
+            ),
             InkWell(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>SecurityScreen()));
@@ -68,7 +93,9 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 10,
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>privacyScreen()));
+              },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -83,13 +110,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ),
             ),
-            Divider(
-              color: Colors.grey.shade100,
 
-              thickness: 6,
-              height: 10,
-            ),
-            InkWell(
+        /*    InkWell(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>InboxSettingPage()));
 
@@ -107,7 +129,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   ],
                 ),
               ),
-            ),
+            ),*/
             Divider(
               color: Colors.grey.shade100,
 
@@ -132,12 +154,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ),
             ),
-            Divider(
-              color: Colors.grey.shade100,
 
-              thickness: 6,
-              height: 10,
-            ),
          /*   InkWell(
               onTap: () {},
               child: Padding(
@@ -162,12 +179,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
 
 
-            Divider(
-              color: Colors.grey,
-
-
-              height: 10,
-            ),InkWell(
+         InkWell(
               onTap: () {},
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -184,18 +196,13 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
             Divider(
-              color: Colors.grey,
+              color: Colors.grey.shade100,
 
-
+              thickness: 6,
               height: 10,
             ),
 
-            Divider(
-              color: Colors.grey,
 
-
-              height: 10,
-            ),
             InkWell(
               onTap: () {},
               child: Padding(
@@ -213,11 +220,12 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
             Divider(
-              color: Colors.grey,
+              color: Colors.grey.shade100,
 
+              thickness: 6,
               height: 10,
             ),
-            InkWell(
+            /*InkWell(
               onTap: () {},
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -238,7 +246,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
               height: 10,
-            ),
+            ),*/
             InkWell(
               onTap: () {},
               child: Padding(
@@ -256,9 +264,9 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
             ),
             Divider(
-              color: Colors.grey,
+              color: Colors.grey.shade100,
 
-
+              thickness: 6,
               height: 10,
             ),
             InkWell(
@@ -294,11 +302,12 @@ class _SettingScreenState extends State<SettingScreen> {
                          builder: (context) => Authenticate()));
                });
               },
-              child: Row(
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(height:30,
-                    padding: const EdgeInsets.symmetric(horizontal: 180),
-                    child: Center(
+                  Container(height:40,
+
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
                       child: Text(
                         'Log Out',
 

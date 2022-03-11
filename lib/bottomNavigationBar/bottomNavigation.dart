@@ -46,7 +46,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           BottomNavigationBarItem(
             icon: Icon(
               CupertinoIcons.videocam_fill,
-              color: Colors.pinkAccent,
+
             ),
             label: 'Record',
           ),

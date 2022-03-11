@@ -1,20 +1,16 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:untitled/helper/constants.dart';
-import 'package:untitled/helper/helperFunctions.dart';
 import 'package:untitled/screens/prifleRelatedScreens/settingPage.dart';
 import 'package:untitled/screens/prifleRelatedScreens/topUpScreen.dart';
 
-import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
-import 'editProfileScreen.dart';
+
+import 'deepAr.dart';
 import 'followersList.dart';
 import 'followingList.dart';
 import 'friendList.dart';
@@ -140,13 +136,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 80.0),
+                  padding: const EdgeInsets.only(top: 5,left: 80.0),
                   child: Row(
                     children: [
                       Image.asset(
                         'assets/nuts.png',
-                        scale: 10,
-                      ),
+                        scale: 5,
+                      ),  SizedBox(width: 10,),
                       Text(
                         '0',
                         style: TextStyle(fontSize: 18),
@@ -155,13 +151,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 80.0),
+                  padding: const EdgeInsets.only(top: 10,right: 80.0),
                   child: Row(
                     children: [
                       Image.asset(
                         'assets/diamond.png',
-                        scale: 9,
+                        scale: 10,
                       ),
+                      SizedBox(width: 10,),
                       Text(
                         '0',
                         style: TextStyle(fontSize: 18),
@@ -185,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(
-                            top: 8.0, right: 8.0, left: 8.0),
+                            top: 8.0, right: 8.0, left: 25.0),
                         child: Text(
                           '66',
                           style: TextStyle(fontSize: 30),
@@ -193,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
-                            bottom: 18.0, right: 8.0, left: 8.0),
+                            bottom: 18.0, right: 8.0, left: 25.0),
                         child: Text(
                           'Friends',
                           style: TextStyle(color: Colors.grey),
@@ -241,7 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.only(
-                              top: 8.0, right: 8.0, left: 8.0),
+                              top: 8.0, right: 25.0, left: 8.0),
                           child: Text(
                             '66',
                             style: TextStyle(fontSize: 30),
@@ -249,7 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
-                              bottom: 18.0, right: 8.0, left: 8.0),
+                              bottom: 18.0, right: 25.0, left: 8.0),
                           child: Text(
                             'Following',
                             style: TextStyle(color: Colors.grey),
@@ -457,41 +454,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [Colors.blue, Colors.black54],
+                      colors: [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
                       begin: const FractionalOffset(0.0, 0.0),
                       end: const FractionalOffset(0.9, 0.2),
                       stops: [0.0, 1.0],
                       tileMode: TileMode.clamp),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Row(mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
                         onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => EditProfile()));
+                                  builder: (context) => SettingScreen()));
                         },
-                        icon: FaIcon(
-                          FontAwesomeIcons.penFancy,
+                        icon: Icon(
+                          CupertinoIcons.settings_solid,
                           color: Colors.white,
-                        )),
-                    Row(
-                      children: [
-                        IconButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SettingScreen()));
-                            },
-                            icon: Icon(
-                              CupertinoIcons.settings_solid,
-                              color: Colors.white,
-                            ))
-                      ],
-                    )
+                        ))
                   ],
                 ),
               ),
@@ -502,7 +483,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: MediaQuery.of(context).size.height * 0.78,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.black26, Colors.teal, Colors.black26],
+                        colors: [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
                       ),
                     ),
                   ),
@@ -515,9 +496,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Center(
                               child: ClipOval(
                                 child: Image.network(
-                                  Constants.profilePicUrl,
-                                  width: 150,
-                                  height: 150,
+                                 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
+                                  width: 130,
+                                  height: 130,
                                   fit: BoxFit.cover,
                                 ),
                               ),),
@@ -526,16 +507,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 4,
                         ),
                         Text(
-                          Constants.updatedName.toUpperCase(),
+                          Constants.myname.toUpperCase(),
                           style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),   SizedBox(
+                          height: 4,
                         ),
-                        Text(
-                          "id:622636",
-                          style: TextStyle(color: Colors.white),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "id:622636",
+                              style: TextStyle(color: Colors.white),
+                            ),SizedBox(width: 10,),Text(
+                              "India",
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
                         ),
-                        Text(
-                          "India",
-                          style: TextStyle(color: Colors.white),
+                        SizedBox(
+                          height: 4,
                         ),
                         Padding(
                           padding:
@@ -584,9 +574,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                                 ),
                               ),
-                              Icon(
-                                CupertinoIcons.forward_end_alt_fill,
-                                color: Colors.white,
+                              IconButton(icon:Icon(
+                                  CupertinoIcons.forward_end_alt_fill,
+                                  color: Colors.white,
+                                ),onPressed: (){
+                             //   Navigator.push(context, MaterialPageRoute(builder: (context)=>DeepAr()));
+                              },
                               )
                             ],
                           ),

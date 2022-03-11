@@ -47,9 +47,9 @@ class _LogginScreenState extends State<LogginScreen> {
               userInfoSnapshot.documents[0].data["email"]);
           HelperFunctions.saveuserCurrentUserIdSharedPreference(
               userInfoSnapshot.documents[0].documentID);
-          String uid=await HelperFunctions.getCurrentUserIdSharedPreference();
+          String uid = await HelperFunctions.getCurrentUserIdSharedPreference();
 
-          print("asdasdasd::"+uid);
+          print("asdasdasd::" + uid);
           print(
               "hhere is your document id:${userInfoSnapshot.documents[0].documentID}");
           print(

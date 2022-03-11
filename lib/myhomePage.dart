@@ -27,116 +27,136 @@ class _MyHomePageState extends State<MyHomePage> {
       length: 5,
       child: Scaffold(
         body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: [ Colors.blue,Colors.black,],
-                            begin: const FractionalOffset(0.0, 0.0),
-                            end: const FractionalOffset(1.0, 0.0),
-                            stops: [0.0, 1.0],
-                            tileMode: TileMode.clamp),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: 250,
-                            child: TabBar(
-                              isScrollable: true,
-                              indicatorWeight: 2,
-                              indicatorColor: Colors.white,
-                              indicatorSize: TabBarIndicatorSize.label,
-                              tabs: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0, bottom: 5, left: 2, right: 2),
-                                  child: Text(
-                                    'Fresher',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                              colors: [
+                                Colors.blue,
+                                Colors.black,
+                              ],
+                              begin: const FractionalOffset(0.0, 0.0),
+                              end: const FractionalOffset(1.0, 0.0),
+                              stops: [0.0, 1.0],
+                              tileMode: TileMode.clamp),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 250,
+                              child: TabBar(
+                                isScrollable: true,
+                                indicatorWeight: 2,
+                                indicatorColor: Colors.white,
+                                indicatorSize: TabBarIndicatorSize.label,
+                                tabs: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8.0, bottom: 5, left: 2, right: 2),
+                                    child: Text(
+                                      'Fresher',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0, bottom: 5, left: 2, right: 2),
-                                  child: Text(
-                                    'Popular',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8.0, bottom: 5, left: 2, right: 2),
+                                    child: Text(
+                                      'Popular',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0, bottom: 5, left: 2, right: 2),
-                                  child: Text(
-                                    'Nearby',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8.0, bottom: 5, left: 2, right: 2),
+                                    child: Text(
+                                      'Nearby',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0, bottom: 5, left: 2, right: 2),
-                                  child: Text(
-                                    'Following',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8.0, bottom: 5, left: 2, right: 2),
+                                    child: Text(
+                                      'Following',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0, bottom: 5, left: 2, right: 2),
-                                  child: Text(
-                                    'Suggestion',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8.0, bottom: 5, left: 2, right: 2),
+                                    child: Text(
+                                      'Suggestion',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18),
+                                    ),
                                   ),
-                                ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SearchScreen()));
+                                    },
+                                    icon: Icon(
+                                      CupertinoIcons.search,
+                                      color: Colors.white,
+                                    )),
+                                IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  NotificationScreen()));
+                                    },
+                                    icon: Icon(
+                                      CupertinoIcons.bell_solid,
+                                      color: Colors.white,
+                                    )),
                               ],
                             ),
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                SearchScreen()));
-                                  },
-                                  icon: Icon(
-                                    CupertinoIcons.search,
-                                    color: Colors.white,
-                                  )),
-                              IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                            NotificationScreen()));
-                                  },
-                                  icon: Icon(
-                                    CupertinoIcons.bell_solid,
-                                    color: Colors.white,
-                                  )),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height,
-                      child: TabBarView(
-                          dragStartBehavior: DragStartBehavior.start,
-                          children: [
-                            FresherTabView(),
-                            Text('2'),
-                            Text('3'),
-                            Text('4'),
-                            Text('5'),
-                          ]),
-                    ),
-                  ],
-                )
-              ],
-            ),
+                      Container(
+                        height: MediaQuery.of(context).size.height,
+                        child: TabBarView(
+                            dragStartBehavior: DragStartBehavior.start,
+                            children: [
+                              FresherTabView(),
+                              Text('2'),
+                              Text('3'),
+                              Text('4'),
+                              Text('5'),
+                            ]),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       ),
@@ -160,7 +180,8 @@ class _BannerSliderState extends State<BannerSlider> {
   Widget build(BuildContext context) {
     return CarouselSlider(
       items: [
-        Container(width: MediaQuery.of(context).size.width,
+        Container(
+          width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -169,7 +190,8 @@ class _BannerSliderState extends State<BannerSlider> {
             child: Image.asset('assets/043.jpg', fit: BoxFit.fitWidth),
           ),
         ),
-        Container(width: MediaQuery.of(context).size.width,
+        Container(
+          width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -178,7 +200,8 @@ class _BannerSliderState extends State<BannerSlider> {
             child: Image.asset('assets/3.jpg', fit: BoxFit.fitWidth),
           ),
         ),
-        Container(width: MediaQuery.of(context).size.width,
+        Container(
+          width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -245,9 +268,9 @@ class _FresherTabViewState extends State<FresherTabView> {
             height: 5,
           ),
           Container(
-            height: 490,
             child: ListView.builder(
-
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: 50,
                 itemBuilder: (BuildContext, int index) {
                   return Column(
@@ -483,6 +506,9 @@ class _FresherTabViewState extends State<FresherTabView> {
                   );
                 }),
           ),
+          SizedBox(
+            height: 130,
+          ),
         ],
       ),
     );
@@ -532,7 +558,8 @@ class _FresherTabViewState extends State<FresherTabView> {
                                     child: IconButton(
                                         icon: Icon(CupertinoIcons.link),
                                         onPressed: () {
-                                          Fluttertoast.showToast(gravity:ToastGravity.CENTER ,
+                                          Fluttertoast.showToast(
+                                              gravity: ToastGravity.CENTER,
                                               msg: 'Link Copied!');
                                         }),
                                   ),

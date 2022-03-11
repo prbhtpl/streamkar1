@@ -349,7 +349,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [Colors.orangeAccent, Colors.blue],
+                      colors: [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
                       begin: const FractionalOffset(0.0, 0.0),
                       end: const FractionalOffset(0.5, 0.0),
                       stops: [0.0, 1.0],
@@ -381,7 +381,7 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                     height: MediaQuery.of(context).size.height*0.78,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Colors.red, Colors.blue, Colors.yellow],
+                        colors:  [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
 
                       ),
                     ),
@@ -414,14 +414,18 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                           'Pal Prabhat',
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
-                        Text(
-                          "id:622636",
-                          style: TextStyle(color: Colors.white),
+                        Row(mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "id:622636",
+                              style: TextStyle(color: Colors.white),
+                            ),  SizedBox(width: 10,), Text(
+                              "India",
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
                         ),
-                        Text(
-                          "India",
-                          style: TextStyle(color: Colors.white),
-                        ),
+
                         Padding(
                           padding: const EdgeInsets.only(left: 120.0, right: 120),
                           child: Row(
