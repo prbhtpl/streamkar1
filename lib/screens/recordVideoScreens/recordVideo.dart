@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -63,6 +64,9 @@ class _RecordVideoState extends State<RecordVideo>
   double _currentScale = 1.0;
   double _baseScale = 1.0;
   int cameraIndex = 0;
+  static const maxSeconds = 60;
+  int seconds = maxSeconds;
+  Timer? timer;
 
   // Counting pointers (number of user fingers on screen)
   int _pointers = 0;
@@ -166,7 +170,7 @@ class _RecordVideoState extends State<RecordVideo>
                       ),
                       Row(
                         children: <Widget>[
-                         // _cameraTogglesRowWidget(),
+                          // _cameraTogglesRowWidget(),
                           _thumbnailWidget(),
                         ],
                       ),
@@ -278,7 +282,7 @@ class _RecordVideoState extends State<RecordVideo>
                                       MaterialPageRoute(
                                           builder: (context) => editVideoScreen(
                                               filePath:
-                                                  videoFile!.path.toString())));
+                                                  File(videoFile!.path))));
                                 },
                               )),
                         ),
@@ -599,7 +603,8 @@ class _RecordVideoState extends State<RecordVideo>
   /// Display the control bar with buttons to take pictures and record videos.
   Widget _captureControlRowWidget() {
     final CameraController? cameraController = controller;
-
+    final isRunning = timer == null ? false : timer!.isActive;
+    final isCompleted=seconds==maxSeconds||seconds==0;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
@@ -607,51 +612,82 @@ class _RecordVideoState extends State<RecordVideo>
         Padding(
           padding: const EdgeInsets.only(top: 30.0, left: 20),
           child: IconButton(
-            icon: Icon(_getCameraIcon(cameras[cameraIndex].lensDirection),color: Colors.white,),
+            icon: Icon(
+              _getCameraIcon(cameras[cameraIndex].lensDirection),
+              color: Colors.white,
+            ),
             onPressed: _onSwitchCamera,
           ),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 30.0, left: 20),
-          child: IconButton(
-            icon: const Icon(
-              Icons.stop,
-              size: 30,
+          child: InkWell(onTap: (){
+            isCompleted?onStopButtonPressed():Fluttertoast.showToast(msg: 'Recording Stopped');
+            stopTimer();
+          },
+            child: IconButton(
+              icon: const Icon(
+                Icons.stop,
+                size: 30,
+              ),
+              color: Colors.red,
+              onPressed: (){
+                isCompleted?onStopButtonPressed():Fluttertoast.showToast(msg: 'Recording Stopped');
+                stopTimer();
+              },
             ),
-            color: Colors.red,
-            onPressed: cameraController != null &&
-                    cameraController.value.isInitialized &&
-                    cameraController.value.isRecordingVideo
-                ? onStopButtonPressed
-                : null,
           ),
         ),
         InkWell(
           onTap: () {
-            cameraController != null &&
-                    cameraController.value.isInitialized &&
-                    !cameraController.value.isRecordingVideo
-                ? onVideoRecordButtonPressed
-                : Fluttertoast.showToast(msg: 'Something Went Wrong');
+            startTimer();
+            onVideoRecordButtonPressed();
           },
-          child: Padding(
-            padding: const EdgeInsets.only(right: 50),
-            child: IconButton(
-              icon: const Icon(
-                Icons.circle,
-                size: 80,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 50.0),
+                child: buildTimer(),
               ),
-              color: Colors.red,
-              onPressed: cameraController != null &&
-                      cameraController.value.isInitialized &&
-                      !cameraController.value.isRecordingVideo
-                  ? onVideoRecordButtonPressed
-                  : null,
-            ),
+              Container(
+                height: 80,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, right: 50),
+                  child: Center(
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5, left: 5),
+                          child: SizedBox(
+                              width: 65,
+                              height: 150,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 6,
+                                value: 1-seconds/maxSeconds,
+                                color: Colors.green,backgroundColor: Colors.white,
+                              )),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.circle,
+                            size: 60,
+                          ),
+                          color: Colors.red,
+                          onPressed: () {
+                            startTimer();
+                            onVideoRecordButtonPressed();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Padding(
-          padding: const EdgeInsets.only(top: 50.0, right: 20),
+          padding: const EdgeInsets.only(top: 40.0, right: 20),
           child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -663,16 +699,27 @@ class _RecordVideoState extends State<RecordVideo>
             ),
             child: IconButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => editVideoScreen(
-                              filePath: videoFile!.path.toString())));
+                  final VideoPlayerController? localVideoController =
+                      videoController;
+                  (localVideoController == null)
+                      ? Container()
+                      : Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => editVideoScreen(
+                                  filePath: File(videoFile!.path))));
                 },
                 icon: Icon(CupertinoIcons.chevron_forward)),
           ),
         )
       ],
+    );
+  }
+
+  Widget buildTimer() {
+    return Text(
+      '$seconds',
+      style: TextStyle(color: Colors.white),
     );
   }
 
@@ -1017,6 +1064,25 @@ class _RecordVideoState extends State<RecordVideo>
   void _showCameraException(CameraException e) {
     logError(e.code, e.description);
     showInSnackBar('Error: ${e.code}\n${e.description}');
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (seconds > 0) {
+        setState(() {
+          seconds--;
+        });
+      } else {
+        stopTimer();
+      }
+    });
+  }
+
+  void stopTimer() {
+    setState(() {
+      timer?.cancel();
+    });
+
   }
 }
 

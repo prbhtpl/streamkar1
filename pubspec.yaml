@@ -62,6 +62,7 @@ dependencies:
   video_editor: ^1.2.3
   open_file: ^3.0.1
   flutter_switch: ^0.3.2
+  helpers: ^1.1.4
 
 
 dev_dependencies:
