@@ -380,10 +380,15 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                     width:  MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height*0.78,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors:  [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
-
-                      ),
+                      gradient: LinearGradient(colors: [
+                        Colors.lightBlueAccent.shade200,
+                        Colors.black12,
+                        Color(0xFF9D6EF7),
+                        Colors.lightBlueAccent.shade200,
+                        Color(0xFF9D6EF7),
+                        Colors.black12,
+                        Color(0xFF9D6EF7),
+                      ], begin: Alignment.topLeft, end: Alignment.bottomRight),
                     ),
                   ),
 

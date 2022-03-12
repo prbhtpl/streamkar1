@@ -143,47 +143,59 @@ class _RecordVideoState extends State<RecordVideo>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(appBar: AppBar(backgroundColor: Color(0xFF9D6EF7),toolbarHeight: 45,elevation: 0.0,),
       key: _scaffoldKey,
       body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: Center(
-                child: _cameraPreviewWidget(),
-              ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          _modeControlRowWidget(),
-                        ],
-                      ),
-                      Row(
-                        children: <Widget>[
-                          // _cameraTogglesRowWidget(),
-                          _thumbnailWidget(),
-                        ],
-                      ),
-                      _captureControlRowWidget(),
-                      SizedBox(
-                        height: 40,
-                      )
-                    ],
-                  ),
+        child: Container(decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+            Colors.lightBlueAccent.shade200,
+            Colors.black12,
+            Color(0xFF9D6EF7),
+            Colors.lightBlueAccent.shade200,
+            Color(0xFF9D6EF7),
+            Colors.black12,
+            Color(0xFF9D6EF7),
+          ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        ),
+          child: Stack(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(1.0),
+                child: Center(
+                  child: _cameraPreviewWidget(),
                 ),
-              ],
-            ),
-          ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            _modeControlRowWidget(),
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            // _cameraTogglesRowWidget(),
+                            _thumbnailWidget(),
+                          ],
+                        ),
+                        _captureControlRowWidget(),
+                        SizedBox(
+                          height: 30,
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -195,7 +207,7 @@ class _RecordVideoState extends State<RecordVideo>
 
     if (cameraController == null || !cameraController.value.isInitialized) {
       return const Text(
-        'Tap a camera',
+        'Opening....',
         style: TextStyle(
           color: Colors.white,
           fontSize: 24.0,
@@ -203,26 +215,30 @@ class _RecordVideoState extends State<RecordVideo>
         ),
       );
     } else {
-      return Container(
-        height: MediaQuery.of(context).size.height / 0.3,
-        width: MediaQuery.of(context).size.width,
-        child: Listener(
-          onPointerDown: (_) => _pointers++,
-          onPointerUp: (_) => _pointers--,
-          child: CameraPreview(
-            controller!,
-            child: LayoutBuilder(
-                builder: (BuildContext context, BoxConstraints constraints) {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onScaleStart: _handleScaleStart,
-                onScaleUpdate: _handleScaleUpdate,
-                onTapDown: (TapDownDetails details) =>
-                    onViewFinderTap(details, constraints),
-              );
-            }),
+      return Column(mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height / 1.3,
+            width: MediaQuery.of(context).size.width,
+            child: Listener(
+              onPointerDown: (_) => _pointers++,
+              onPointerUp: (_) => _pointers--,
+              child: CameraPreview(
+                controller!,
+                child: LayoutBuilder(
+                    builder: (BuildContext context, BoxConstraints constraints) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onScaleStart: _handleScaleStart,
+                    onScaleUpdate: _handleScaleUpdate,
+                    onTapDown: (TapDownDetails details) =>
+                        onViewFinderTap(details, constraints),
+                  );
+                }),
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
   }
@@ -352,7 +368,7 @@ class _RecordVideoState extends State<RecordVideo>
                     ]
                   : <Widget>[],
               IconButton(
-                icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
+                icon: Icon(enableAudio ? Icons.mic : Icons.mic_off),
                 color: Colors.white,
                 onPressed: controller != null ? onAudioModeButtonPressed : null,
               ),
@@ -604,7 +620,7 @@ class _RecordVideoState extends State<RecordVideo>
   Widget _captureControlRowWidget() {
     final CameraController? cameraController = controller;
     final isRunning = timer == null ? false : timer!.isActive;
-    final isCompleted=seconds==maxSeconds||seconds==0;
+    final isCompleted = seconds == maxSeconds || seconds == 0;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       mainAxisSize: MainAxisSize.max,
@@ -621,24 +637,23 @@ class _RecordVideoState extends State<RecordVideo>
         ),
         Padding(
           padding: const EdgeInsets.only(top: 30.0, left: 20),
-          child: InkWell(onTap: (){
-            isCompleted?onStopButtonPressed():Fluttertoast.showToast(msg: 'Recording Stopped');
-            stopTimer();
-          },
-            child: IconButton(
-              icon: const Icon(
-                Icons.stop,
-                size: 30,
-              ),
-              color: Colors.red,
-              onPressed: (){
-                isCompleted?onStopButtonPressed():Fluttertoast.showToast(msg: 'Recording Stopped');
-                stopTimer();
-              },
+          child: IconButton(
+            icon: const Icon(
+              Icons.stop,
+              size: 30,
             ),
+            color: Colors.red,
+            onPressed: () {
+
+              onStopButtonPressed();
+              stopTimer(reset: true);
+
+
+            },
           ),
         ),
-        InkWell(
+        InkWell(/*onLongPress: (){  startTimer();
+        onVideoRecordButtonPressed();},*/
           onTap: () {
             startTimer();
             onVideoRecordButtonPressed();
@@ -663,8 +678,9 @@ class _RecordVideoState extends State<RecordVideo>
                               height: 150,
                               child: CircularProgressIndicator(
                                 strokeWidth: 6,
-                                value: 1-seconds/maxSeconds,
-                                color: Colors.green,backgroundColor: Colors.white,
+                                value: 1 - seconds / maxSeconds,
+                                color: Colors.green,
+                                backgroundColor: Colors.white,
                               )),
                         ),
                         IconButton(
@@ -676,6 +692,7 @@ class _RecordVideoState extends State<RecordVideo>
                           onPressed: () {
                             startTimer();
                             onVideoRecordButtonPressed();
+
                           },
                         ),
                       ],
@@ -1073,16 +1090,22 @@ class _RecordVideoState extends State<RecordVideo>
           seconds--;
         });
       } else {
-        stopTimer();
+        stopTimer(reset: false);
       }
     });
+    Future.delayed(Duration(seconds: 60)).then((_) {
+      onStopButtonPressed();
+      stopTimer();
+    } );
   }
-
-  void stopTimer() {
+void resetTimer()=>setState(()=>seconds=maxSeconds);
+  void stopTimer({bool reset=true}) {
     setState(() {
+      if(reset){
+        resetTimer();
+      }else{}
       timer?.cancel();
     });
-
   }
 }
 

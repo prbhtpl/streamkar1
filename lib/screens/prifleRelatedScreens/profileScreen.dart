@@ -1,14 +1,16 @@
 import 'dart:io';
-
+import 'package:path/path.dart';
+import 'package:photofilters/photofilters.dart';
+import 'package:image/image.dart' as imageLib;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:untitled/helper/constants.dart';
+import 'package:untitled/screens/prifleRelatedScreens/editphotoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/settingPage.dart';
 import 'package:untitled/screens/prifleRelatedScreens/topUpScreen.dart';
-
 
 import 'deepAr.dart';
 import 'followersList.dart';
@@ -23,8 +25,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  File? image;
-  Future pickImage(ImageSource source) async {
+  File? imageFile;
+/*  Future pickImage(ImageSource source) async {
     try {
       final image = await ImagePicker().pickImage(source: source);
       if (image == null) return;
@@ -35,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } on PlatformException catch (e) {
       print('Failed to pick Image');
     }
-  }
+  }*/
 /*Future pickImage()async{
   try{
     final image=await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -51,7 +53,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 }*/
 
-  Future<void> _CameraGalleryDialogue() async {
+  Future<void> _CameraGalleryDialogue(BuildContext context) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true, // user must tap button!
@@ -64,7 +66,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      pickImage(ImageSource.camera);
+                      Navigator.push(
+                          this.context,
+                          MaterialPageRoute(
+                              builder: (context) => EditPic(
+                                  imageFile: imageFile,
+                                  source: ImageSource.camera)));
+                      // pickImage(ImageSource.camera);
                     });
                   },
                   child: Row(
@@ -76,11 +84,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       IconButton(
                           onPressed: () {
                             setState(() {
-                              pickImage(ImageSource.camera);
+                              Navigator.push(
+                                  this.context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditPic(
+                                          imageFile: imageFile,
+                                          source: ImageSource.camera)));
+                              // pickImage(ImageSource.camera);
                             });
                           },
                           icon: Icon(
-                            CupertinoIcons.camera_fill,
+                            Icons.add_a_photo,
                             color: Colors.grey,
                           ))
                     ],
@@ -91,7 +105,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      pickImage(ImageSource.gallery);
+                      Navigator.push(
+                          this.context,
+                          MaterialPageRoute(
+                              builder: (context) => EditPic(
+                                  imageFile: imageFile,
+                                  source: ImageSource.gallery)));
+                      // pickImage(ImageSource.gallery);
                     });
                   },
                   child: Row(
@@ -103,7 +123,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       IconButton(
                           onPressed: () {
                             setState(() {
-                              pickImage(ImageSource.gallery);
+                              Navigator.push(
+                                  this.context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditPic(
+                                          imageFile: imageFile,
+                                          source: ImageSource.gallery)));
+
+                              //  pickImage(ImageSource.gallery);
                             });
                           },
                           icon: Icon(
@@ -136,13 +163,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 5,left: 80.0),
+                  padding: const EdgeInsets.only(top: 5, left: 80.0),
                   child: Row(
                     children: [
                       Image.asset(
                         'assets/nuts.png',
                         scale: 5,
-                      ),  SizedBox(width: 10,),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Text(
                         '0',
                         style: TextStyle(fontSize: 18),
@@ -151,14 +181,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 10,right: 80.0),
+                  padding: const EdgeInsets.only(top: 10, right: 80.0),
                   child: Row(
                     children: [
                       Image.asset(
                         'assets/diamond.png',
                         scale: 10,
                       ),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Text(
                         '0',
                         style: TextStyle(fontSize: 18),
@@ -412,7 +444,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.grey,
                           ),
                           onPressed: () {
-                            _CameraGalleryDialogue();
+                            _CameraGalleryDialogue(context);
                           },
                         )),
                     Container(
@@ -430,9 +462,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         width: 80,
                                         height: 80,
                                         color: Colors.grey.shade200,
-                                        child: image != null
+                                        child: imageFile != null
                                             ? Image.file(
-                                                image!,
+                                                imageFile!,
                                                 width: 80,
                                                 height: 80,
                                                 fit: BoxFit.cover,
@@ -454,13 +486,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
-                      begin: const FractionalOffset(0.0, 0.0),
-                      end: const FractionalOffset(0.9, 0.2),
-                      stops: [0.0, 1.0],
-                      tileMode: TileMode.clamp),
+                    colors: [
+                      Color(0xFF9D6EF7),
+                      Colors.lightBlueAccent.shade200
+                    ],
+                    begin: const FractionalOffset(0.0, 0.0),
+                    end: const FractionalOffset(0.9, 0.2),
+                    stops: [0.0, 1.0],
+                  ),
                 ),
-                child: Row(mainAxisAlignment: MainAxisAlignment.end,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
                         onPressed: () {
@@ -482,9 +518,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height * 0.78,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
-                      ),
+                      gradient: LinearGradient(colors: [
+                        Colors.lightBlueAccent.shade200,
+                        Colors.black12,
+                        Color(0xFF9D6EF7),
+                        Colors.lightBlueAccent.shade200,
+                        Color(0xFF9D6EF7),
+                        Color(0xFF9D6EF7),
+                      ], begin: Alignment.topLeft, end: Alignment.bottomRight),
                     ),
                   ),
                   Container(
@@ -494,14 +535,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 20.0),
                           child: Center(
-                              child: ClipOval(
-                                child: Image.network(
-                                 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
-                                  width: 130,
-                                  height: 130,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),),
+                            child: ClipOval(
+                              child: Image.network(
+                                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
+                                width: 130,
+                                height: 130,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
                         ),
                         SizedBox(
                           height: 4,
@@ -509,7 +551,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Text(
                           Constants.myname.toUpperCase(),
                           style: TextStyle(fontSize: 20, color: Colors.white),
-                        ),   SizedBox(
+                        ),
+                        SizedBox(
                           height: 4,
                         ),
                         Row(
@@ -518,7 +561,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Text(
                               "id:622636",
                               style: TextStyle(color: Colors.white),
-                            ),SizedBox(width: 10,),Text(
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
                               "India",
                               style: TextStyle(color: Colors.white),
                             )
@@ -574,12 +621,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                                 ),
                               ),
-                              IconButton(icon:Icon(
+                              IconButton(
+                                icon: Icon(
                                   CupertinoIcons.forward_end_alt_fill,
                                   color: Colors.white,
-                                ),onPressed: (){
-                             //   Navigator.push(context, MaterialPageRoute(builder: (context)=>DeepAr()));
-                              },
+                                ),
+                                onPressed: () {
+                                  //   Navigator.push(context, MaterialPageRoute(builder: (context)=>DeepAr()));
+                                },
                               )
                             ],
                           ),
