@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,14 +8,21 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:untitled/bottomNavigationBar/bottomNavigation.dart';
 import 'package:untitled/helper/constants.dart';
 import 'package:untitled/helper/helperFunctions.dart';
-import 'package:untitled/screens/prifleRelatedScreens/profileScreen.dart';
-import 'package:uuid/uuid.dart';
 
-import '../../modal/user.dart';
+import 'package:http/http.dart' as http;
+
+import 'editProfilephoto2.dart';
+
+enum addType {
+  Male,
+  Female,
+}
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -23,11 +32,28 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  String _selectedGender = 'male';
-  File? image;
+  final formKey = GlobalKey<FormState>();
+  final formKey1 = GlobalKey<FormState>();
+  final formKey2 = GlobalKey<FormState>();
+  addType? _character =addType.Male;
+  String addtype = 'Male';
+  File? imageFile;
   String? userId;
   bool loading = false;
   TextEditingController EditedName = TextEditingController();
+  TextEditingController Introduction = TextEditingController();
+  TextEditingController Dob = TextEditingController();
+  int? id;
+  String _name = "";
+  String name = '';
+  String vId = '';
+  String region = '';
+  String ImagelUrl = '';
+  String dob = '';
+  String introduction = '';
+  String gender = '';
+
+  List profile = [];
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
@@ -41,8 +67,13 @@ class _EditProfileState extends State<EditProfile> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      Navigator.pop(context);
-                    //  pickCameraImage();
+                      Navigator.push(
+                          this.context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfilePic2(
+                                  imageFile: imageFile,
+                                  source: ImageSource.camera)));
+                      //  pickCameraImage();
                     });
                   },
                   child: Row(
@@ -64,8 +95,12 @@ class _EditProfileState extends State<EditProfile> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      Navigator.pop(context);
-                    //  pickGalleryImage();
+                      Navigator.push(
+                          this.context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfilePic2(
+                                  imageFile: imageFile,
+                                  source: ImageSource.gallery)));
                     });
                   },
                   child: Row(
@@ -101,10 +136,17 @@ class _EditProfileState extends State<EditProfile> {
           content: Container(
               // Specify some width
               width: MediaQuery.of(context).size.width * .7,
-              child: TextField(
-                controller: EditedName,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(hintText: 'Change Nickname'),
+              child: Form(key: formKey,
+                child: TextFormField(validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Please enter your name";
+                  }
+                  return null;
+                },
+                  controller: EditedName,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(hintText: name.toString()),
+                ),
               )),
           actions: [
             Row(
@@ -126,8 +168,12 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                   // inputData();
-                    Navigator.pop(context);
+                    if(formKey.currentState!.validate()){
+                      Navigator.pop(context);
+                    }else{
+                      Fluttertoast.showToast(msg: 'This cannot be empty');
+                    }
+
                   },
                   child: Text(
                     'Save',
@@ -144,46 +190,49 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Future<void> _showChooseGenderDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text('Select Your Gender'),
-          actions: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ListTile(
-                  leading: Radio<String>(
-                    value: 'male',
-                    groupValue: _selectedGender,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGender = value!;
-                      });
-                    },
-                  ),
-                  title: const Text('Male'),
-                ),
-                ListTile(
-                  leading: Radio<String>(
-                    value: 'female',
-                    groupValue: _selectedGender,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedGender = value!;
-                      });
-                    },
-                  ),
-                  title: const Text('Female'),
-                ),
-              ],
-            )
+  Widget RadioButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            Radio<addType>(
+              value: addType.Male,
+              groupValue: _character,
+              onChanged: (addType? value) {
+                setState(() {
+                  _character = value;
+                  addtype = addType.Male.name;
+                });
+                print(addtype);
+              },
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text('Male'),
           ],
-        );
-      },
+        ),
+        Row(
+          children: [
+            Radio<addType>(
+              value: addType.Female,
+              groupValue: _character,
+              onChanged: (addType? value) {
+                setState(() {
+                  _character = value;
+                  addtype = addType.Female.name;
+                });
+                print(addtype);
+              },
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text('Female'),
+          ],
+        )
+      ],
     );
   }
 
@@ -196,9 +245,19 @@ class _EditProfileState extends State<EditProfile> {
           content: Container(
               // Specify some width
               width: MediaQuery.of(context).size.width * .7,
-              child: TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(hintText: 'Tell Us about yourself'),
+              child: Form(key: formKey2,
+                child: TextFormField(validator: (value) {
+                  if (value!.isEmpty  ) {
+                    return "Enter something about yourself.";
+                  }else{
+
+                  }
+
+                },
+                  controller: Introduction,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(hintText: 'Tell Us about yourself'),
+                ),
               )),
           actions: [
             Row(
@@ -219,7 +278,14 @@ class _EditProfileState extends State<EditProfile> {
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    if(formKey2.currentState!.validate()){
+                      Navigator.pop(context);
+                    }else{
+                      Fluttertoast.showToast(msg: 'Enter Intro');
+                    }
+
+                  },
                   child: Text(
                     'Save',
                     style: TextStyle(color: Colors.pink.shade300),
@@ -235,95 +301,179 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  /*Future pickGalleryImage() async {
-    ImagePicker _picker = ImagePicker();
+  Future<void> _showDOBDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Container(
+              // Specify some width
+              width: MediaQuery.of(context).size.width * .7,
+              child: Form(key: formKey1,
+                child: TextFormField(  validator:  (value) {
+                  if (value!.isEmpty ) {
+                    return "Please enter Dob";
+                  }
+                  return null;
+                },
+                  controller: Dob,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(hintText: 'DD/MM/YY'),
+                ),
+              )),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 108.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
 
-    await _picker.pickImage(source: ImageSource.gallery).then((xFile) {
-      if (xFile != null) {
-        image = File(xFile.path);
-        //uploadFile();
-        uploadImage();
-      }
-    });
+                    },
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.white, elevation: 0),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if(formKey1.currentState!.validate()){
+                      Navigator.pop(context);
+                    }else{
+                      Fluttertoast.showToast(msg: 'Required to Update');
+                    }
+                  },
+                  child: Text(
+                    'Save',
+                    style: TextStyle(color: Colors.pink.shade300),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.white, elevation: 0),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
   }
 
-  Future pickCameraImage() async {
-    ImagePicker _picker = ImagePicker();
-
-    await _picker.pickImage(source: ImageSource.camera).then((xFile) {
-      if (xFile != null) {
-        image = File(xFile.path);
-        //uploadFile();
-        uploadImage();
-      }
-    });
-  }
-
-  Future refreshingUrl() async {
-    Constants.profilePicUrl =
-        await HelperFunctions.getuserProfilePicSharedPreference();
+  getallPreferences() async {
+    var userDetails = await HelperFunctions.getVStarUniqueIdkey();
+    var name = await HelperFunctions.getuserNameSharedPreference();
     setState(() {
-      *//*loading=true;*//*
+      id = userDetails;
+      print(id.toString());
+
+      _name = name;
+      print(_name.toString());
     });
   }
 
-  Future uploadImage() async {
-    String? fileName = Uuid().v1();
-    int status = 1;
+  Future getUserDetails() async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/profileGet");
+    EasyLoading.show(status: 'Loading...');
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {"user_id": id1.toString()};
 
-    *//*await Firestore.instance
-        .collection('chatroom')
-        .document(widget.chatRoomId)
-        .collection('chats')
-        .document(fileName)
-        .setData({
-      "sender": Constants.myname,
-      "message": "",
-      "type": "img",
-      "time": FieldValue.serverTimestamp(),
-    });*//*
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
 
-    var ref = FirebaseStorage.instance
-        .ref()
-        .child('profile_pics')
-        .child("$fileName.jpg");
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+      profile = res['response_getUserProfile'];
+      print(profile);
+      ImagelUrl = profile[0]['userphoto'].toString();
+      gender = profile[0]['gender'].toString();
+      name = profile[0]['user_name'].toString();
+      region = profile[0]['region'].toString();
+      vId = profile[0]['user_code'].toString();
+      dob = profile[0]['dob'].toString();
+      introduction = profile[0]['introduction'].toString();
+      loading = true;
+    });
 
-    var uploadTask = await ref.putFile(image).onComplete;
-
-    if (status == 1) {
-      String imageUrl = await uploadTask.ref.getDownloadURL();
-
-      HelperFunctions.saveuserProfilepicSharedPreference(imageUrl);
-
-      setState(() {});
-
-      print(Constants.profilePicUrl);
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
-  Future<void> inputData() async {
-    userId = await HelperFunctions.getCurrentUserIdSharedPreference();
-    print("uid:${userId}");
-    // here you write the codes to input the data into firestore
-    await Firestore.instance
-        .collection('users')
-        .document(userId)
-        .updateData({"name": EditedName.text});
-    HelperFunctions.saveuserUpdatedNameSharedPreference(EditedName.text);
-    Constants.updatedName =
-        await HelperFunctions.getUpdateNameSharedPreference();
-  }*/
+
+  Future insertDataToProfile() async {
+   if(EditedName.text.isNotEmpty && Dob.text.isNotEmpty && Introduction.text.isNotEmpty){
+     EasyLoading.show(status: 'Updating...');
+
+     var api = Uri.parse("https://vinsta.ggggg.in.net/api/userProfile");
+
+     Map mapeddate = {
+       'user_id': id.toString(),
+       'user_name': EditedName.text,
+       'gender': addtype.toString(),
+       'dob': Dob.text,
+       'region': 'India',
+       'introduction': Introduction.text,
+     };
+
+     final response = await http.post(
+       api,
+       body: mapeddate,
+     );
+
+     var res = await json.decode(response.body);
+     print("hererere" + response.body);
+
+
+     try {
+       if (response.statusCode == 200) {
+         EasyLoading.showSuccess("Updated");
+         EasyLoading.dismiss();
+         setState(() {
+           Navigator.pushReplacement(
+               context,
+               MaterialPageRoute(
+                   builder: (context) => BottomNavigation(
+                     screenId: 4,
+                   )));
+         });
+       }
+     } catch (e) {
+       print(e);
+     }
+   }else{
+     Fluttertoast.showToast(msg: 'Fill all fields first');
+   }
+  }
 
   @override
   void initState() {
-   // refreshingUrl();
-
+    getUserDetails();
+    getallPreferences();
     print(Constants.updatedName);
     setState(() {
-      loading = !loading;
+
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    EditedName.dispose();
+    Introduction.dispose();
+    super.dispose();
   }
 
   @override
@@ -345,7 +495,7 @@ class _EditProfileState extends State<EditProfile> {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Center(
-                child: InkWell(
+                child: TextButton(
               child: Text(
                 'Save',
                 style: TextStyle(
@@ -353,9 +503,9 @@ class _EditProfileState extends State<EditProfile> {
                   color: Colors.black,
                 ),
               ),
-              onTap: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => BottomNavigation(screenId: 4,)));
+              onPressed: () {
+                insertDataToProfile();
+               // UpdateProfile();
               },
             )),
           )
@@ -383,12 +533,12 @@ class _EditProfileState extends State<EditProfile> {
                       border: Border.all(color: Colors.blue, width: 1),
                     ),
                     child: ClipOval(
-                        child: loading == false
+                        child: loading!=true
                             ? Center(
                                 child: CircularProgressIndicator(),
                               )
                             : Image.network(
-                             'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60',
+                                ImagelUrl.toString(),
                                 fit: BoxFit.cover,
                               )),
                   ),
@@ -423,7 +573,7 @@ class _EditProfileState extends State<EditProfile> {
                           style: TextStyle(color: Colors.grey),
                         ),
                         Text(
-                          Constants.updatedName,
+                       name.toString(),
                           style: TextStyle(fontSize: 18),
                         ),
                       ],
@@ -451,13 +601,16 @@ class _EditProfileState extends State<EditProfile> {
                         style: TextStyle(color: Colors.grey),
                       ),
                       Text(
-                        '622161916',
+                        ' ${vId.toString()}',
                         style: TextStyle(fontSize: 18),
                       ),
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: vId.toString()));
+                      Fluttertoast.showToast(msg: 'Copied');
+                    },
                     child: Text('Copy'),
                     style: ElevatedButton.styleFrom(
                         primary: Colors.pinkAccent.shade200),
@@ -472,31 +625,24 @@ class _EditProfileState extends State<EditProfile> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    _showChooseGenderDialog();
-                  });
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Gender',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                          'Male',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    Icon(CupertinoIcons.right_chevron)
-                  ],
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Gender',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Text(
+                        gender.toString(),
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  ),
+                  RadioButtons(),
+                ],
               ),
             ),
             Divider(
@@ -533,13 +679,22 @@ class _EditProfileState extends State<EditProfile> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
-                onTap: () {},
+                onTap: () {
+                  _showDOBDialog();
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Birthday',
-                      style: TextStyle(color: Colors.grey),
+                    Row(
+                      children: [
+                        Text(
+                          'Birthday: ',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        Text(
+                          dob.toString(),
+                        ),
+                      ],
                     ),
                     Icon(CupertinoIcons.right_chevron)
                   ],
@@ -560,9 +715,18 @@ class _EditProfileState extends State<EditProfile> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Introduction',
-                      style: TextStyle(color: Colors.grey),
+                    Column(
+                      children: [
+                        Text(
+                          'Introduction',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        Container(
+                          child: Text(
+                            introduction.toString(),
+                          ),
+                        ),
+                      ],
                     ),
                     Icon(CupertinoIcons.right_chevron)
                   ],

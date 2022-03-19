@@ -11,7 +11,6 @@ import 'followersList.dart';
 import 'followingList.dart';
 import 'friendList.dart';
 
-
 class ProfileInfo extends StatefulWidget {
   const ProfileInfo({Key? key}) : super(key: key);
 
@@ -38,7 +37,16 @@ class _ProfileInfoState extends State<ProfileInfo> {
                       crossAxisSpacing: 1),
                   itemBuilder: (BuildContext context, int index) {
                     return Column(
-                      children: [Image.asset('assets/badge3.png',scale: 9,),Text('Badge no: $index',style: TextStyle(fontSize: 11),)],
+                      children: [
+                        Image.asset(
+                          'assets/badge3.png',
+                          scale: 9,
+                        ),
+                        Text(
+                          'Badge no: $index',
+                          style: TextStyle(fontSize: 11),
+                        )
+                      ],
                     );
                   })),
           actions: [
@@ -125,7 +133,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                   ],
                 ),
                 onPressed: () {
-                 /* Navigator.push(context,
+                  /* Navigator.push(context,
                       MaterialPageRoute(builder: (context) => ChatBox()));*/
                 },
               ),
@@ -133,7 +141,6 @@ class _ProfileInfoState extends State<ProfileInfo> {
           ],
         ),
       ),
-
       body: SlidingUpPanel(
         renderPanelSheet: true,
         maxHeight: MediaQuery.of(context).size.height,
@@ -228,7 +235,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
                     )),
               ],
             ),
-            InkWell(onTap: (){_showMyDialog();},
+            InkWell(
+              onTap: () {
+                _showMyDialog();
+              },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -277,7 +287,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
                 ),
               ),
             ),
-            InkWell(onTap: (){_showMyDialog();},
+            InkWell(
+              onTap: () {
+                _showMyDialog();
+              },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -304,7 +317,6 @@ class _ProfileInfoState extends State<ProfileInfo> {
                         Text('Badges'),
                       ],
                     ),
-
                     Row(
                       children: [
                         Image.asset(
@@ -327,7 +339,9 @@ class _ProfileInfoState extends State<ProfileInfo> {
                           width: 10,
                         ),
                         IconButton(
-                            onPressed: () {   _showMyDialog();},
+                            onPressed: () {
+                              _showMyDialog();
+                            },
                             icon: Icon(CupertinoIcons.right_chevron))
                       ],
                     ),
@@ -349,7 +363,10 @@ class _ProfileInfoState extends State<ProfileInfo> {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                      colors: [Color(0xFF9D6EF7),Colors.lightBlueAccent.shade200],
+                      colors: [
+                        Color(0xFF9D6EF7),
+                        Colors.lightBlueAccent.shade200
+                      ],
                       begin: const FractionalOffset(0.0, 0.0),
                       end: const FractionalOffset(0.5, 0.0),
                       stops: [0.0, 1.0],
@@ -361,14 +378,19 @@ class _ProfileInfoState extends State<ProfileInfo> {
                     IconButton(
                         onPressed: () {
                           Navigator.pop(context);
-                        }, icon: Icon(CupertinoIcons.back)),
-
+                        },
+                        icon: Icon(CupertinoIcons.back)),
                     Row(
                       children: [
                         IconButton(
                             onPressed: () {
-Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInfo()));
-                            }, icon:Icon(CupertinoIcons.ellipsis))
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SelectedProfileInfo()));
+                            },
+                            icon: Icon(CupertinoIcons.ellipsis))
                       ],
                     )
                   ],
@@ -377,8 +399,8 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
               Stack(
                 children: [
                   Container(
-                    width:  MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height*0.78,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.78,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(colors: [
                         Colors.lightBlueAccent.shade200,
@@ -391,7 +413,6 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                       ], begin: Alignment.topLeft, end: Alignment.bottomRight),
                     ),
                   ),
-
                   Container(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -419,20 +440,25 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                           'Pal Prabhat',
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
-                        Row(mainAxisAlignment: MainAxisAlignment.center,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               "id:622636",
                               style: TextStyle(color: Colors.white),
-                            ),  SizedBox(width: 10,), Text(
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
                               "India",
                               style: TextStyle(color: Colors.white),
                             )
                           ],
                         ),
-
                         Padding(
-                          padding: const EdgeInsets.only(left: 120.0, right: 120),
+                          padding:
+                              const EdgeInsets.only(left: 120.0, right: 120),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -446,7 +472,8 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                                     )),
                                 child: Text(
                                   'Lv 1',
-                                  style: TextStyle(color: Colors.white, fontSize: 10),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 10),
                                 ),
                               ),
                               Container(
@@ -458,7 +485,8 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                                       color: Colors.yellow.shade200,
                                     )),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Icon(
                                       CupertinoIcons.heart_solid,
@@ -471,7 +499,8 @@ Navigator.push(context, MaterialPageRoute(builder: (context)=>SelectedProfileInf
                                     Text(
                                       '1',
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold, fontSize: 10),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 10),
                                     ),
                                   ],
                                 ),

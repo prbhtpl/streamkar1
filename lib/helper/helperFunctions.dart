@@ -7,6 +7,7 @@ class HelperFunctions {
   static String sharedPreferenceUserProfilePickkey = 'POFILEPICURL';
   static String sharedPreferenceCurrentUserkey = 'CurrentUserId';
   static String sharedPreferenceUpdatedNamekey = 'UpdatedUSERNAMEKEY';
+  static String sharedPreferenceVStarUniqueIdkey = '1';
   // saving data in sharedPreference
   static Future<bool> saveuserLoggedInSharedPreference(
       bool isuserLoggedIn) async {
@@ -19,6 +20,11 @@ class HelperFunctions {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     return await prefs.setString(sharedPreferenceCurrentUserkey, id);
+  }
+  static Future savePreferenceVStarUniqueIdkey(int id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    return await prefs.setInt(sharedPreferenceVStarUniqueIdkey, id);
   }
 
   static Future saveuserNameSharedPreference(String userName) async {
@@ -76,5 +82,10 @@ class HelperFunctions {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     return await prefs.getString(sharedPreferenceUpdatedNamekey);
+  }
+  static Future<int> getVStarUniqueIdkey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    return await prefs.getInt(sharedPreferenceVStarUniqueIdkey);
   }
 }

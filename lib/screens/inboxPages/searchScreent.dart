@@ -109,7 +109,11 @@ class _SearchScreenState extends State<SearchScreen> {
     getUserInfo();
     super.initState();
   }
-
+@override
+  void dispose() {
+  searchBoxEditor.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:untitled/screens/recordVideoScreens/editVideoScreen.dart';
@@ -372,14 +374,19 @@ class _RecordVideoState extends State<RecordVideo>
                 color: Colors.white,
                 onPressed: controller != null ? onAudioModeButtonPressed : null,
               ),
-              IconButton(
-                icon: Icon(controller?.value.isCaptureOrientationLocked ?? false
-                    ? Icons.screen_lock_rotation
-                    : Icons.screen_rotation),
-                color: Colors.white,
-                onPressed: controller != null
-                    ? onCaptureOrientationLockButtonPressed
-                    : null,
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(onPressed: (){pickVideo();},icon: Icon(CupertinoIcons.circle_grid_3x3_fill,color: Colors.white,),),
+                  IconButton(
+                    icon: Icon(controller?.value.isCaptureOrientationLocked ?? false
+                        ? Icons.screen_lock_rotation
+                        : Icons.screen_rotation),
+                    color: Colors.white,
+                    onPressed: controller != null
+                        ? onCaptureOrientationLockButtonPressed
+                        : null,
+                  ),
+                ],
               ),
             ],
           ),
@@ -390,7 +397,21 @@ class _RecordVideoState extends State<RecordVideo>
       ),
     );
   }
+  Future pickVideo() async {
+    ImagePicker _picker = ImagePicker();
 
+    await _picker.pickVideo(source: ImageSource.gallery).then((xFile) {
+      if (xFile != null) {
+        videoFile = File(xFile.path) as XFile?;
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => editVideoScreen(
+                    filePath:
+                    File(videoFile!.path))));
+      }
+    });
+  }
   Widget _flashModeControlRowWidget() {
     return SizeTransition(
       sizeFactor: _flashModeControlRowAnimation,

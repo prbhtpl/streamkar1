@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:untitled/helper/helperFunctions.dart';
 import 'package:untitled/screens/regiterScreen.dart';
 
@@ -10,6 +14,7 @@ import '../bottomNavigationBar/bottomNavigation.dart';
 import '../myhomePage.dart';
 import '../services/auth.dart';
 import '../services/database.dart';
+import 'package:http/http.dart' as http;
 
 class LogginScreen extends StatefulWidget {
   const LogginScreen({Key? key, required this.toggle}) : super(key: key);
@@ -28,7 +33,7 @@ class _LogginScreenState extends State<LogginScreen> {
 
   TextEditingController password = TextEditingController();
 
-  signIn() async {
+   /*signIn() async {
     if (formKey.currentState!.validate()) {
       setState(() {
         loading = true;
@@ -58,13 +63,108 @@ class _LogginScreenState extends State<LogginScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => BottomNavigation(screenId: 0)));
-        } else {
+        }
+        else {
           setState(() {
             loading = false;
             //show snackbar
           });
         }
       });
+    }
+  }*/
+  Future loginMethod() async {
+    await HelperFunctions.saveuserLoggedInSharedPreference(true);
+    if (formKey.currentState!.validate()) {
+      EasyLoading.show(status: 'Loading...');
+
+      var api = Uri.parse("https://vinsta.ggggg.in.net/api/userlogin");
+
+      Map mapeddate = {
+        'user_email': email.text,
+        'password': password.text,
+      };
+
+      final response = await http.post(
+        api,
+        body: mapeddate,
+      );
+
+      var res = await json.decode(response.body);
+      print("hererere" + response.body);
+
+      var userDetails = await HelperFunctions.getVStarUniqueIdkey();   print('id1${userDetails.toString()}');
+      await HelperFunctions.savePreferenceVStarUniqueIdkey(
+          res['response_userLogin'][0]['id']);
+      var msg = res['status_message'].toString();
+
+      try {
+        if (response.statusCode == 200) {
+          if (msg == "User Login Successful") {
+            Fluttertoast.showToast(
+                msg: msg.toString());
+            EasyLoading.dismiss();
+            setState(() {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => BottomNavigation(screenId: 0),
+                ),
+              );
+            });
+            setState(() {
+              loading = true;
+            });
+            await authMethods
+                .signInWithEmailAndPassword(email.text, password.text)
+                .then((value) async {
+              if (value != null) {
+                QuerySnapshot userInfoSnapshot =
+                    await dataBaseMethods.getUserByUserEmail(email.text);
+
+                HelperFunctions.saveuserLoggedInSharedPreference(true);
+                HelperFunctions.saveuserNameSharedPreference(
+                    userInfoSnapshot.documents[0].data["name"]);
+                HelperFunctions.saveuserEmailSharedPreference(
+                    userInfoSnapshot.documents[0].data["email"]);
+                HelperFunctions.saveuserCurrentUserIdSharedPreference(
+                    userInfoSnapshot.documents[0].documentID);
+                String uid =
+                    await HelperFunctions.getCurrentUserIdSharedPreference();
+
+                print("asdasdasd::" + uid);
+                print(
+                    "hhere is your document id:${userInfoSnapshot.documents[0].documentID}");
+                print(
+                    "hhere is your name:${userInfoSnapshot.documents[0].data['name']}");
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BottomNavigation(screenId: 0)));
+              } else {
+                setState(() {
+                  loading = false;
+                  //show snackbar
+                });
+              }
+            });
+          } else if (msg == "Login Credentials is not correct") {
+            EasyLoading.dismiss();
+            setState(() {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => RegisterScreen(
+                    toggle: widget.toggle,
+                  ),
+                ),
+              );
+            });
+            return Fluttertoast.showToast(
+                msg: 'User Not Register Please Sign Up');
+          }
+        }
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
@@ -166,7 +266,7 @@ class _LogginScreenState extends State<LogginScreen> {
                                             style:
                                                 TextStyle(color: Colors.white),
                                             decoration: InputDecoration(
-                                                hintText: 'Enter your V Id',
+                                                hintText: 'Enter your email Id',
                                                 hintStyle: TextStyle(
                                                     color: Colors.white)),
                                           ),
@@ -207,7 +307,8 @@ class _LogginScreenState extends State<LogginScreen> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                         onPressed: () {
-                                          signIn();
+                                       //  signIn();
+                                         loginMethod();
                                         },
                                       ),
                                     ),
@@ -263,7 +364,7 @@ class _LogginScreenState extends State<LogginScreen> {
                         style: TextStyle(fontSize: 17, color: Colors.white)),
                     InkWell(
                         onTap: () {
-                          Navigator.push(context,
+                          Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: (context) {
                             return RegisterScreen(
                               toggle: widget.toggle,
@@ -288,6 +389,8 @@ class _LogginScreenState extends State<LogginScreen> {
   @override
   void dispose() {
     super.dispose();
+    email.dispose();
+    password.dispose();
     _controller.dispose();
   }
 }

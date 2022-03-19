@@ -200,7 +200,11 @@ class _ChatBoxState extends State<ChatBox> {
       },
     );
   }
-
+@override
+  void dispose() {
+    _message.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;

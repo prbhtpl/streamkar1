@@ -271,7 +271,7 @@ class _FresherTabViewState extends State<FresherTabView> {
             child: ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: 50,
+                itemCount: 5,
                 itemBuilder: (BuildContext, int index) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,7 +507,7 @@ class _FresherTabViewState extends State<FresherTabView> {
                 }),
           ),
           SizedBox(
-            height: 130,
+            height: 180,
           ),
         ],
       ),

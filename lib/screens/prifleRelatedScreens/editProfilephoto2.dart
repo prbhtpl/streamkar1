@@ -3,36 +3,36 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:image/image.dart' as imageLib;
+import 'package:http/http.dart' as http;
 import 'package:photofilters/filters/filters.dart';
 import 'package:photofilters/filters/preset_filters.dart';
 import 'package:photofilters/widgets/photo_filter.dart';
-import 'package:untitled/screens/prifleRelatedScreens/profileScreen.dart';
-import 'package:http/http.dart' as http;
-import '../../bottomNavigationBar/bottomNavigation.dart';
-import '../../helper/helperFunctions.dart';
-import 'addNewPost.dart';
+import 'package:untitled/bottomNavigationBar/bottomNavigation.dart';
 
-class EditPic extends StatefulWidget {
-  const EditPic({Key? key, required this.imageFile, required this.source})
+import '../../helper/helperFunctions.dart';
+
+class EditProfilePic2 extends StatefulWidget {
+  const EditProfilePic2(
+      {Key? key, required this.imageFile, required this.source})
       : super(key: key);
   final ImageSource source;
   final File? imageFile;
+
   @override
-  State<EditPic> createState() => _EditPicState(imageFile);
+  State<EditProfilePic2> createState() => _EditProfilePic2State(imageFile);
 }
 
-class _EditPicState extends State<EditPic> {
+class _EditProfilePic2State extends State<EditProfilePic2> {
+  _EditProfilePic2State(this.imageFile);
+
   String? fileName;
   List<Filter> filters = presetFiltersList;
   final picker = ImagePicker();
   File? imageFile;
-
-  _EditPicState(this.imageFile);
-
-
   Future getImage(context, ImageSource source) async {
     final pickedFile = await picker.getImage(source: source);
     if (pickedFile != null) {
@@ -63,9 +63,52 @@ class _EditPicState extends State<EditPic> {
     }
   }
 
+  int? id;
+  String _name = '';
+  getallPreferences() async {
+    var userDetails = await HelperFunctions.getVStarUniqueIdkey();
+    var name = await HelperFunctions.getuserNameSharedPreference();
+    setState(() {
+      id = userDetails;
+      print(id.toString());
+
+      _name = name;
+      print(_name.toString());
+    });
+  }
+
+  Future uploadProfileImage() async {
+    EasyLoading.show(status: 'Uploading...');
+    var uploadUrl =
+        Uri.parse("https://vinsta.ggggg.in.net/api/userProfileImage");
+    var requestMulti = http.MultipartRequest('POST', uploadUrl);
+    requestMulti.fields['user_id'] = id.toString();
+   if(imageFile!=null){
+     requestMulti.files.add(await http.MultipartFile.fromPath('userphoto', imageFile!.path));
+     var res=await requestMulti.send();
+
+     if(res.statusCode==200){
+       print(imageFile!.path);
+       EasyLoading.showSuccess('Data is Uploaded');
+       EasyLoading.dismiss();
+       Navigator.pushReplacement(this.context, MaterialPageRoute(builder: (context)=>BottomNavigation(screenId: 4)));
+       print('Upload Data');
+
+     }else{
+       Fluttertoast.showToast(msg: 'Something went wrong upload again');
+     }
+     print(requestMulti.fields);
+     print(fileName);
+     return res.reasonPhrase;
+   }else {
+     print('Image is not selected');
+   }
+
+  }
+
   @override
   void initState() {
-
+    getallPreferences();
     setState(() {
       getImage(this.context, widget.source);
     });
@@ -103,17 +146,15 @@ class _EditPicState extends State<EditPic> {
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          Navigator.push(
+          /*   Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                  builder: (context) => AddPostSccreen(
-                        imageFile: imageFile,
-                      )));
-
+                  builder: (context) => BottomNavigation(screenId: 4,)));*/
+          uploadProfileImage();
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text('Save',),
+          child: Text('Save'),
         ),
       ),
     );
