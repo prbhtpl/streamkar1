@@ -83,27 +83,29 @@ class _EditProfilePic2State extends State<EditProfilePic2> {
         Uri.parse("https://vinsta.ggggg.in.net/api/userProfileImage");
     var requestMulti = http.MultipartRequest('POST', uploadUrl);
     requestMulti.fields['user_id'] = id.toString();
-   if(imageFile!=null){
-     requestMulti.files.add(await http.MultipartFile.fromPath('userphoto', imageFile!.path));
-     var res=await requestMulti.send();
+    if (imageFile != null) {
+      requestMulti.files
+          .add(await http.MultipartFile.fromPath('userphoto', imageFile!.path));
+      var res = await requestMulti.send();
 
-     if(res.statusCode==200){
-       print(imageFile!.path);
-       EasyLoading.showSuccess('Data is Uploaded');
-       EasyLoading.dismiss();
-       Navigator.pushReplacement(this.context, MaterialPageRoute(builder: (context)=>BottomNavigation(screenId: 4)));
-       print('Upload Data');
-
-     }else{
-       Fluttertoast.showToast(msg: 'Something went wrong upload again');
-     }
-     print(requestMulti.fields);
-     print(fileName);
-     return res.reasonPhrase;
-   }else {
-     print('Image is not selected');
-   }
-
+      if (res.statusCode == 200) {
+        print(imageFile!.path);
+        EasyLoading.showSuccess('Data is Uploaded');
+        EasyLoading.dismiss();
+        Navigator.pushReplacement(
+            this.context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(screenId: 4)));
+        print('Upload Data');
+      } else {
+        Fluttertoast.showToast(msg: 'Something went wrong upload again');
+      }
+      print(requestMulti.fields);
+      print(fileName);
+      return res.reasonPhrase;
+    } else {
+      print('Image is not selected');
+    }
   }
 
   @override

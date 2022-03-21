@@ -33,7 +33,7 @@ class _LogginScreenState extends State<LogginScreen> {
 
   TextEditingController password = TextEditingController();
 
-   /*signIn() async {
+  /*signIn() async {
     if (formKey.currentState!.validate()) {
       setState(() {
         loading = true;
@@ -93,7 +93,8 @@ class _LogginScreenState extends State<LogginScreen> {
       var res = await json.decode(response.body);
       print("hererere" + response.body);
 
-      var userDetails = await HelperFunctions.getVStarUniqueIdkey();   print('id1${userDetails.toString()}');
+      var userDetails = await HelperFunctions.getVStarUniqueIdkey();
+      print('id1${userDetails.toString()}');
       await HelperFunctions.savePreferenceVStarUniqueIdkey(
           res['response_userLogin'][0]['id']);
       var msg = res['status_message'].toString();
@@ -101,8 +102,7 @@ class _LogginScreenState extends State<LogginScreen> {
       try {
         if (response.statusCode == 200) {
           if (msg == "User Login Successful") {
-            Fluttertoast.showToast(
-                msg: msg.toString());
+            Fluttertoast.showToast(msg: msg.toString());
             EasyLoading.dismiss();
             setState(() {
               Navigator.of(context).pushReplacement(
@@ -307,8 +307,8 @@ class _LogginScreenState extends State<LogginScreen> {
                                               fontWeight: FontWeight.bold),
                                         ),
                                         onPressed: () {
-                                       //  signIn();
-                                         loginMethod();
+                                          //  signIn();
+                                          loginMethod();
                                         },
                                       ),
                                     ),

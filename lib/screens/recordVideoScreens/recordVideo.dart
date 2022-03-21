@@ -49,6 +49,8 @@ class _RecordVideoState extends State<RecordVideo>
   CameraController? controller;
   XFile? imageFile;
   XFile? videoFile;
+  XFile? GalleryvideoFile;
+  File? video;
   VideoPlayerController? videoController;
   VoidCallback? videoPlayerListener;
   bool enableAudio = true;
@@ -400,15 +402,17 @@ class _RecordVideoState extends State<RecordVideo>
   Future pickVideo() async {
     ImagePicker _picker = ImagePicker();
 
-    await _picker.pickVideo(source: ImageSource.gallery).then((xFile) {
+    final pickedFile = await _picker.pickVideo(source: ImageSource.gallery,maxDuration: const Duration(seconds: 120)).then((xFile) {
       if (xFile != null) {
-        videoFile = File(xFile.path) as XFile?;
-        Navigator.push(
+       var selectedImage = File(GalleryvideoFile!.path);
+print('here:${GalleryvideoFile!.path}');
+       /* Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => editVideoScreen(
                     filePath:
-                    File(videoFile!.path))));
+                    File(GalleryvideoFile!.path))));*/
+
       }
     });
   }

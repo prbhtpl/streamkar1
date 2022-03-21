@@ -392,7 +392,12 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {
       profile = res['response_getUserProfile'];
       print(profile);
-      ImagelUrl = profile[0]['userphoto'].toString();
+      if( profile[0]['userphoto']==null){
+        ImagelUrl= 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'.toString();
+      }else{ ImagelUrl = profile[0]['userphoto'].toString();
+
+
+      }
       gender = profile[0]['gender'].toString();
       name = profile[0]['user_name'].toString();
       region = profile[0]['region'].toString();

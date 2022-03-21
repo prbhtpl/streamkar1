@@ -148,7 +148,7 @@ class _CurrentUserAllPostScreensState extends State<CurrentUserAllPostScreens> {
                                   padding: const EdgeInsets.all(10.0),
                                   child: Center(
                                     child: ClipOval(
-                                      child:loading!=true?Container(child: Center(child: CircularProgressIndicator(),),): Image.network(
+                                      child:loading!=true?Container(height:20,width:20,child: CircularProgressIndicator(),): Image.network(
                                         ImagelUrl!=null?ImagelUrl.toString():"No Image Found",
                                         width: 40,
                                         height: 40,
@@ -221,10 +221,10 @@ class _CurrentUserAllPostScreensState extends State<CurrentUserAllPostScreens> {
                         ),
                         IconButton(
                           onPressed: () {
-                            Navigator.push(
+                          /*  Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => CommentScreen()));
+                                    builder: (context) => CommentScreen()));*/
                           },
                           icon: Icon(Icons.chat_bubble_outline),
                         ),
