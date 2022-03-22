@@ -120,6 +120,7 @@ class _allUSerLikesScreenState extends State<allUSerLikesScreen> {
                 ],
               ),
             ),
+            SizedBox(height: 10,),
             Container(
               child: ListView.builder(shrinkWrap: true,
                   itemCount:likeList == null ? 0 : likeList.length,
