@@ -9,7 +9,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:untitled/screens/homeScreenRelatedScreens/comentPage.dart';
+import 'package:untitled/screens/homeScreenRelatedScreens/Post%20RelatedPages/comentPage.dart';
+import 'package:untitled/screens/homeScreenRelatedScreens/Post%20RelatedPages/userLikePostScreen.dart';
 import 'package:untitled/screens/homeScreenRelatedScreens/notificationScreen.dart';
 import 'package:untitled/screens/homeScreenRelatedScreens/searchPage.dart';
 import 'package:untitled/screens/prifleRelatedScreens/profileInfoScreen.dart';
@@ -247,8 +248,12 @@ class _FresherTabViewState extends State<FresherTabView> {
   bool UserImageloading = false;
   List allFollowersposts = [];
   List allFriendsposts = [];
-
-  bool fill = true;
+  List likes = [];
+  List getLikeUnlike = [];
+  int status = 0;
+  int likeCount = 0;
+String recentlikeaPerson='';
+  bool fill = false;
   Future PostComment(
     int following_id,
     int friend_id,
@@ -276,6 +281,59 @@ class _FresherTabViewState extends State<FresherTabView> {
     try {
       if (response.statusCode == 200) {
         Fluttertoast.showToast(msg: 'Comment added');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future LikeCountPerson(int photoId) async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/likeCount");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {"id": photoId.toString()};
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere1" + response.body);
+    setState(() {
+      likeCount=res['response_like_count'];
+
+
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future recentLikePerson(int photoId) async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/likeRecentName");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    print("recentlikeaPerson"+photoId.toString());
+    Map mapeddate = {"id": photoId.toString()};
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere1" + response.body);
+    setState(() {
+      recentlikeaPerson=res['response_recentlikes'][0]['user_name'].toString();
+
+
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: 'Updated');
       }
     } catch (e) {
       print(e);
@@ -318,6 +376,36 @@ class _FresherTabViewState extends State<FresherTabView> {
     }
   }
 
+  Future GetLikeDislikeStatus() async {
+    EasyLoading.show(status: 'Updating');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/likeOnimage");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": id1.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+
+    print("UploadPosts3" + response.body);
+    setState(() {
+      getLikeUnlike = res['response_imagelikes'];
+      /* loading = true;*/
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future GetFollowingAllPost() async {
     EasyLoading.show(status: 'Updating');
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/followingImages");
@@ -335,6 +423,37 @@ class _FresherTabViewState extends State<FresherTabView> {
     setState(() {
       allFollowersposts = res['response_f_image'];
       loading = true;
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future LikeUnLikePost(int postId, int LikeStatus) async {
+    EasyLoading.show(status: 'Updating');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/like_dislike");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": id1.toString(),
+      "postImage_id": postId.toString(),
+      "like_status": LikeStatus.toString()
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("postId.toString()" + postId.toString());
+    setState(() {
+     // likes = res['response_likes'];
+      /*loading = true;*/
     });
 
     try {
@@ -404,6 +523,7 @@ class _FresherTabViewState extends State<FresherTabView> {
 
   @override
   void initState() {
+    GetLikeDislikeStatus();
     GetFriedsAllPost();
     getUserDetails();
     GetFollowingAllPost();
@@ -454,7 +574,10 @@ class _FresherTabViewState extends State<FresherTabView> {
                                     onTap: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
-                                        return ProfileInfo();
+                                        return ProfileInfo(
+                                          user_id: allFollowersposts[index]
+                                              ['following_id'],
+                                        );
                                       }));
                                     },
                                     child: ClipOval(
@@ -465,25 +588,17 @@ class _FresherTabViewState extends State<FresherTabView> {
                                               child:
                                                   CircularProgressIndicator(),
                                             )
-                                          : InteractiveViewer(
-                                              panEnabled:
-                                                  false, // Set it to false
-                                              boundaryMargin:
-                                                  EdgeInsets.all(100),
-                                              minScale: 0.5,
-                                              maxScale: 2,
-                                              child: Image.network(
-                                                allFollowersposts[index]
-                                                            ['userphoto'] !=
-                                                        null
-                                                    ? allFollowersposts[index]
-                                                            ['userphoto']
-                                                        .toString()
-                                                    : "No Image Found",
-                                                width: 40,
-                                                height: 40,
-                                                fit: BoxFit.cover,
-                                              ),
+                                          : Image.network(
+                                              allFollowersposts[index]
+                                                          ['userphoto'] !=
+                                                      null
+                                                  ? allFollowersposts[index]
+                                                          ['userphoto']
+                                                      .toString()
+                                                  : "No Image Found",
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
                                             ),
                                     ),
                                   ),
@@ -543,18 +658,26 @@ class _FresherTabViewState extends State<FresherTabView> {
                                       color: Colors.red,
                                     ),
                               onPressed: () {
-                                fill = !fill;
+                                setState(() {LikeCountPerson(allFollowersposts[index]['id']);
+                                  recentLikePerson(
+                                      allFollowersposts[index]['id']);
+                                  if (fill == true) {
+                                    fill == false;
+                                  } else {
+                                    fill == true;
+                                  }
+                                  print("bool::::" + fill.toString());
+                                  fill = !fill;
 
-                                setState(() {
-                                  /* fill == false
-                                      ? Fluttertoast.showToast(
-                                      msg: 'Added to wishlist',
-                                      fontSize: 18,
-                                      gravity: ToastGravity.BOTTOM)
-                                      : Fluttertoast.showToast(
-                                      msg: 'Removed from wishlist',
-                                      fontSize: 18,
-                                      gravity: ToastGravity.BOTTOM);*/
+                                  if (fill == false) {
+                                    status = 0;
+                                  } else {
+                                    status = 1;
+                                  }
+                                  print("fill:" + fill.toString());
+                                  print(status);
+                                  LikeUnLikePost(
+                                      allFollowersposts[index]['id'], status);
                                 });
                               },
                             ),
@@ -593,13 +716,18 @@ class _FresherTabViewState extends State<FresherTabView> {
                           child: Row(children: [
                             Text('Liked by '),
                             Text(
-                              'mitchkoko',
+                              recentlikeaPerson.toString(),
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(' and '),
-                            Text(
-                              '10,980 others',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            InkWell(onTap:(){
+                              Navigator.push(context,MaterialPageRoute(builder: (context)=>allUSerLikesScreen(postId: allFollowersposts[index]
+                              ['id'],)));
+                            },
+                              child: Text(
+                                '${likeCount.toString()} others',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ]),
                         ),
@@ -624,14 +752,28 @@ class _FresherTabViewState extends State<FresherTabView> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0, top: 8),
-                          child: RichText(
-                            text: TextSpan(
-                              style: TextStyle(color: Colors.black),
-                              children: [
-                                TextSpan(
-                                    text: "view all 95 comments",
-                                    style: TextStyle(color: Colors.grey)),
-                              ],
+                          child: InkWell(onTap:(){
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CommentScreen(
+                                      id: allFollowersposts[index]
+                                      ['id'],
+                                      followingId:
+                                      allFollowersposts[index]
+                                      ['following_id'],
+                                      friendId: 0,
+                                    )));
+                          },
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                      text: "view all 95 comments",
+                                      style: TextStyle(color: Colors.grey)),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -737,45 +879,32 @@ class _FresherTabViewState extends State<FresherTabView> {
                                     onTap: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
-                                        return ProfileInfo();
+                                        return ProfileInfo(
+                                          user_id: allFriendsposts[index]
+                                              ['friend_id'],
+                                        );
                                       }));
                                     },
-                                    child: InteractiveViewer(constrained: false,
-                                      panEnabled:
-                                      false, // Set it to false
-                                      boundaryMargin:
-                                      EdgeInsets.all(100),
-                                      minScale: 0.5,
-                                      maxScale: 2,
-                                      child: ClipOval(
-                                        child: loading != true
-                                            ? Container(
-                                                height: 20,
-                                                width: 20,
-                                                child:
-                                                    CircularProgressIndicator(),
-                                              )
-                                            : InteractiveViewer(constrained: false,
-                                                panEnabled:
-                                                    false, // Set it to false
-                                                boundaryMargin:
-                                                    EdgeInsets.all(100),
-                                                minScale: 0.5,
-                                                maxScale: 2,
-                                                child: Image.network(
-                                                  allFriendsposts[index]
-                                                              ['userphoto'] !=
-                                                          null
-                                                      ? allFriendsposts[index]
-                                                              ['userphoto']
-                                                          .toString()
-                                                      : "No Image Found",
-                                                  width: 40,
-                                                  height: 40,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                      ),
+                                    child: ClipOval(
+                                      child: loading != true
+                                          ? Container(
+                                              height: 20,
+                                              width: 20,
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            )
+                                          : Image.network(
+                                              allFriendsposts[index]
+                                                          ['userphoto'] !=
+                                                      null
+                                                  ? allFriendsposts[index]
+                                                          ['userphoto']
+                                                      .toString()
+                                                  : "No Image Found",
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
+                                            ),
                                     ),
                                   ),
                                   SizedBox(
@@ -834,18 +963,28 @@ class _FresherTabViewState extends State<FresherTabView> {
                                       color: Colors.red,
                                     ),
                               onPressed: () {
-                                fill = !fill;
-
                                 setState(() {
-                                  /* fill == false
-                                      ? Fluttertoast.showToast(
-                                      msg: 'Added to wishlist',
-                                      fontSize: 18,
-                                      gravity: ToastGravity.BOTTOM)
-                                      : Fluttertoast.showToast(
-                                      msg: 'Removed from wishlist',
-                                      fontSize: 18,
-                                      gravity: ToastGravity.BOTTOM);*/
+                                  LikeCountPerson(allFriendsposts[index]['id']);
+                                  recentLikePerson(
+                                      allFriendsposts[index]['id']);
+
+                                  if (fill == true) {
+                                    fill == false;
+                                  } else {
+                                    fill == true;
+                                  }
+                                  print("bool::::" + fill.toString());
+                                  fill = !fill;
+
+                                  if (fill == false) {
+                                    status = 0;
+                                  } else {
+                                    status = 1;
+                                  }
+                                  print("fill:" + fill.toString());
+                                  print(status);
+                                  LikeUnLikePost(
+                                      allFriendsposts[index]['id'], status);
                                 });
                               },
                             ),
@@ -882,13 +1021,18 @@ class _FresherTabViewState extends State<FresherTabView> {
                           child: Row(children: [
                             Text('Liked by '),
                             Text(
-                              'mitchkoko',
+                              recentlikeaPerson.toString(),
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(' and '),
-                            Text(
-                              '10,980 others',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            InkWell(onTap:(){
+                              Navigator.push(context,MaterialPageRoute(builder: (context)=>allUSerLikesScreen(postId:  allFriendsposts[index]
+                              ['id'],)));
+                            },
+                              child: Text(
+                                  '${likeCount.toString()} others',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                             ),
                           ]),
                         ),
@@ -913,14 +1057,26 @@ class _FresherTabViewState extends State<FresherTabView> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0, top: 8),
-                          child: RichText(
-                            text: TextSpan(
-                              style: TextStyle(color: Colors.black),
-                              children: [
-                                TextSpan(
-                                    text: "view all 95 comments",
-                                    style: TextStyle(color: Colors.grey)),
-                              ],
+                          child: InkWell(onTap:(){
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CommentScreen(
+                                      id: allFriendsposts[index]['id'],
+                                      friendId: allFriendsposts[index]
+                                      ['friend_id'],
+                                      followingId: 0,
+                                    )));
+                          },
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                      text: "view all 95 comments",
+                                      style: TextStyle(color: Colors.grey)),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -977,10 +1133,12 @@ class _FresherTabViewState extends State<FresherTabView> {
                                     /* print('allFollowersposts[index][]:' +
                                         allFollowersposts[index]
                                             ['following_id']);*/
-                                    PostComment(
-                                        0,
-                                        allFriendsposts[index]['friend_id'],
-                                        allFriendsposts[index]['id']);
+                                    postText.text.toString().isNotEmpty
+                                        ? PostComment(
+                                            0,
+                                            allFriendsposts[index]['friend_id'],
+                                            allFriendsposts[index]['id'])
+                                        : print('null');
                                   });
                                   /*    postText.clear();*/
                                 },
@@ -1357,11 +1515,11 @@ class _FresherTabViewState extends State<FresherTabView> {
                                               children: [
                                                 InkWell(
                                                   onTap: () {
-                                                    Navigator.push(
+                                                    /*   Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                ProfileInfo()));
+                                                                ProfileInfo()));*/
                                                   },
                                                   child: Container(
                                                     width: 40,

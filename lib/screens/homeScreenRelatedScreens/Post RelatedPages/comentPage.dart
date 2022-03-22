@@ -6,8 +6,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
-import '../../helper/helperFunctions.dart';
-import '../prifleRelatedScreens/profileInfoScreen.dart';
+import '../../../helper/helperFunctions.dart';
+import '../../prifleRelatedScreens/profileInfoScreen.dart';
 
 class CommentScreen extends StatefulWidget {
   const CommentScreen({
@@ -169,7 +169,7 @@ class _CommentScreenState extends State<CommentScreen> {
       "user_id": id1.toString(),
       "status_like": status.toString()
     };
-
+    print('commentId:' + commentID.toString() + "status:" + status.toString());
     final response = await http.post(
       api,
       body: mapeddate,
@@ -183,7 +183,7 @@ class _CommentScreenState extends State<CommentScreen> {
     try {
       if (response.statusCode == 200) {
         EasyLoading.dismiss();
-       /* if (status == 0) {
+        /* if (status == 0) {
           Fluttertoast.showToast(msg: 'UnLiked');
         } else {
           Fluttertoast.showToast(msg: 'Liked');
@@ -236,7 +236,7 @@ class _CommentScreenState extends State<CommentScreen> {
 
     try {
       if (response.statusCode == 200) {
-       /* Fluttertoast.showToast(msg: 'Updated');*/
+        /* Fluttertoast.showToast(msg: 'Updated');*/
       }
     } catch (e) {
       print(e);
@@ -263,7 +263,7 @@ class _CommentScreenState extends State<CommentScreen> {
 // getLikeDisLikeStatus(commentList[0]['id']);
     try {
       if (response.statusCode == 200) {
-       /* Fluttertoast.showToast(msg: 'Updated');*/
+        /* Fluttertoast.showToast(msg: 'Updated');*/
       }
     } catch (e) {
       print(e);
@@ -276,7 +276,7 @@ class _CommentScreenState extends State<CommentScreen> {
     getUserDetails();
     GetComments();
     GetEmojis();
-
+    print('ImageId' + widget.id.toString());
     super.initState();
   }
 
@@ -363,9 +363,11 @@ class _CommentScreenState extends State<CommentScreen> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {postText.text.isNotEmpty?
-                      PostComment(
-                          widget.followingId, widget.friendId, widget.id):print('null');
+                    onTap: () {
+                      postText.text.isNotEmpty
+                          ? PostComment(
+                              widget.followingId, widget.friendId, widget.id)
+                          : print('null');
                     },
                     child: Text(
                       'post',
@@ -406,10 +408,10 @@ class _CommentScreenState extends State<CommentScreen> {
                   ListTile(
                       leading: InkWell(
                         onTap: () {
-                          Navigator.push(
+                          /*Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ProfileInfo()));
+                                  builder: (context) => ProfileInfo()));*/
                         },
                         child: ClipOval(
                           child: loading != true
@@ -458,15 +460,12 @@ class _CommentScreenState extends State<CommentScreen> {
                               print("bool::::" + fill.toString());
                               fill = !fill;
 
-
                               if (fill == false) {
                                 status = 0;
-
-
                               } else {
                                 status = 1;
-
-                              }print("fill:" + fill.toString());
+                              }
+                              print("fill:" + fill.toString());
                               print(status);
                               LikeUnlikeComments(
                                   commentList[index]['id'], status);

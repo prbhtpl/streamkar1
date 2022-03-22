@@ -1,24 +1,36 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:untitled/screens/prifleRelatedScreens/selectedProfileInfo.dart';
+import 'package:http/http.dart' as http;
+import '../../helper/helperFunctions.dart';
 
-import '../chatBox.dart';
 import 'followersList.dart';
 import 'followingList.dart';
 import 'friendList.dart';
 
 class ProfileInfo extends StatefulWidget {
-  const ProfileInfo({Key? key}) : super(key: key);
-
+  const ProfileInfo({Key? key,required this.user_id}) : super(key: key);
+final int user_id;
   @override
   _ProfileInfoState createState() => _ProfileInfoState();
 }
 
 class _ProfileInfoState extends State<ProfileInfo> {
+  List profile = [];  bool UserImageloading = false;
+  String ImagelUrl = '';
+  String name = '';
+  String vId = '';
+  String region = '';
+  int friendsCount = 0;
+  int followingCount = 0;
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
@@ -67,7 +79,104 @@ class _ProfileInfoState extends State<ProfileInfo> {
       },
     );
   }
+  Future getUserDetails() async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/profileGet");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {"user_id": widget.user_id.toString()};
+    print(widget.user_id);
 
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+      profile = res['response_getUserProfile'];
+      print(profile);
+      if (profile[0]['userphoto'] == null) {
+        ImagelUrl =
+            'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                .toString();
+      } else {
+        ImagelUrl = profile[0]['userphoto'].toString();
+      }
+      name = profile[0]['user_name'].toString();
+      region = profile[0]['region'].toString();
+      vId = profile[0]['user_code'].toString();
+      print('Image:' + ImagelUrl.toString());
+      UserImageloading = true;
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future GetFollowingCount() async {
+    EasyLoading.show(status: 'Updating');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/following_count");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": id1.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("UploadPosts2" + response.body);
+    setState(() {
+      followingCount = res['response_following_count'];
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future GetFriendsCount() async {
+    EasyLoading.show(status: 'Searching...');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friends_count");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": id1.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("UploadPosts2" + response.body);
+    setState(() {
+      friendsCount = res['response_friends_count'];
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  @override
+  void initState() {
+    getUserDetails();
+    GetFollowingCount();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     var _collapsedHeight = 380.0;
@@ -163,7 +272,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                         padding: const EdgeInsets.only(
                             top: 8.0, right: 8.0, left: 8.0),
                         child: Text(
-                          '66',
+                          friendsCount.toString(),
                           style: TextStyle(fontSize: 30),
                         ),
                       ),
@@ -219,7 +328,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                           padding: const EdgeInsets.only(
                               top: 8.0, right: 8.0, left: 8.0),
                           child: Text(
-                            '66',
+                            followingCount.toString(),
                             style: TextStyle(fontSize: 30),
                           ),
                         ),
@@ -420,38 +529,42 @@ class _ProfileInfoState extends State<ProfileInfo> {
                         Padding(
                           padding: const EdgeInsets.only(top: 10.0),
                           child: Center(
-                              child: Container(
-                            width: 125,
-                            height: 125,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(100),
-                              border: Border.all(color: Colors.blue, width: 4),
-                              image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: AssetImage('assets/2.jpg')),
-                            ),
-                          )),
+                            child: ClipOval(
+                              child: UserImageloading != true
+                                  ? Container(
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                                  : Image.network(
+                                ImagelUrl != null
+                                    ? ImagelUrl.toString()
+                                    : 'No Image Found',
+                                width: 130,
+                                height: 130,
+                                fit: BoxFit.cover,
+                              ),
+                            ),),
                         ),
                         SizedBox(
                           height: 4,
                         ),
                         Text(
-                          'Pal Prabhat',
+                          name.toString(),
                           style: TextStyle(fontSize: 20, color: Colors.white),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "id:622636",
+                             vId.toString(),
                               style: TextStyle(color: Colors.white),
                             ),
                             SizedBox(
                               width: 10,
                             ),
                             Text(
-                              "India",
+                             region.toString(),
                               style: TextStyle(color: Colors.white),
                             )
                           ],

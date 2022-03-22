@@ -109,7 +109,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
               children: [
                 ListTile(
                     leading: InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo(user_id: followingList[index]['following_id'] ,)));
                     },
                       child: ClipOval(
                         child: loading != true

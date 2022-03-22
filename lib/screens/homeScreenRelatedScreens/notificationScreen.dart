@@ -58,11 +58,11 @@ Container(height:MediaQuery.of(context).size.height,child: ListView.builder(
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.push(
+                    /*  Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  ProfileInfo()));
+                                  ProfileInfo()));*/
                     },
                     child: Stack(children: [
                       CircleAvatar(maxRadius: 25,child: Image.asset('assets/person.jpg')),

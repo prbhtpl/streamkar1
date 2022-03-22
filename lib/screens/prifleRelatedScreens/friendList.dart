@@ -113,7 +113,7 @@ class _FriendListScreenState extends State<FriendListScreen> {
               children: [
                 ListTile(
                    leading: InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo(user_id: friendList[index]['friend_id'] ,)));
                     },
                       child: ClipOval(
                         child: loading != true

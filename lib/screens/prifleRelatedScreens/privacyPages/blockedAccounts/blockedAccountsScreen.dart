@@ -48,7 +48,7 @@ class _BlockAccountScreenState extends State<BlockAccountScreen> {
                             primary: Colors.white
                           ),onPressed: (){},child: Text('Unblock',style: TextStyle(color: Colors.black),),),
                               leading: InkWell(onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo()));
+                              /*  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo()));*/
                               },
                                 child: Stack(
                                     children:[

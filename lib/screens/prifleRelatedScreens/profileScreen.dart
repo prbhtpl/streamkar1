@@ -12,7 +12,7 @@ import 'package:untitled/screens/prifleRelatedScreens/editphotoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/profileInfoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/settingPage.dart';
 import 'package:untitled/screens/prifleRelatedScreens/topUpScreen.dart';
-import '../homeScreenRelatedScreens/comentPage.dart';
+import '../homeScreenRelatedScreens/Post RelatedPages/comentPage.dart';
 import 'YourPost/currentUserPost.dart';
 import 'followersList.dart';
 import 'followingList.dart';

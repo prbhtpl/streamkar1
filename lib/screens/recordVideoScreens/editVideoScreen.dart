@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -8,6 +10,7 @@ import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
 
 import 'EditedVideoScreen.dart';
+import 'addsongsScreen.dart';
 import 'cropScreen.dart';
 
 class editVideoScreen extends StatefulWidget {
@@ -233,7 +236,7 @@ class _editVideoScreenState extends State<editVideoScreen> {
         height: height,
         child: Row(
           children: [
-            Expanded(
+         /*   Expanded(
               child: GestureDetector(
                 onTap: () => _controller.rotate90Degrees(RotateDirection.left),
                 child: Icon(
@@ -265,16 +268,31 @@ class _editVideoScreenState extends State<editVideoScreen> {
                 onTap: _exportCover,
                 child: Icon(Icons.save_alt, color: Colors.white),
               ),
-            ),
+            ),*/
             Expanded(
               child: GestureDetector(
-                onTap: _exportVideo,
+                onTap: ()
+    { Navigator.push(context,
+        MaterialPageRoute(builder: (context) => addSongs()));
+                },
                 child: Icon(
-                  Icons.save,
+                  CupertinoIcons.music_note_2,
                   color: Colors.white,
                 ),
               ),
             ),
+            Expanded(
+              child: TextButton(
+                onPressed: _exportVideo,
+
+                child: Align(alignment: Alignment.topRight,
+                  child: Text(
+                  'Next',style: TextStyle(color: Colors.white,fontSize: 15),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 10,)
           ],
         ),
       ),

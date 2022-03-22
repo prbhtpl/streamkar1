@@ -272,11 +272,11 @@ class _StatusState extends State<Status> {
                               children: [
                                 InkWell(
                                   onTap: () {
-                                    Navigator.push(
+                                  /*  Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                ProfileInfo()));
+                                                ProfileInfo()));*/
                                   },
                                   child: Container(
                                     width: 30,
@@ -881,11 +881,11 @@ class _StatusState extends State<Status> {
                                     ListTile(
                                         leading: InkWell(
                                           onTap: () {
-                                            Navigator.push(
+                                        /*    Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        ProfileInfo()));
+                                                        ProfileInfo()));*/
                                           },
                                           child: Stack(children: [
                                             CircleAvatar(

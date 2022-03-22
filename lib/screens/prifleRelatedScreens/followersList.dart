@@ -41,10 +41,10 @@ class _FollowersScreenState extends State<FollowersScreen> {
                 ListTile(
                     leading: InkWell(
                       onTap: () {
-                        Navigator.push(
+                        /*Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ProfileInfo()));
+                                builder: (context) => ProfileInfo()));*/
                       },
                       child: Stack(children: [
                         CircleAvatar(child: Image.asset('assets/person.jpg')),

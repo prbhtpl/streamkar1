@@ -9,7 +9,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import '../../../helper/helperFunctions.dart';
-import '../../homeScreenRelatedScreens/comentPage.dart';
+import '../../homeScreenRelatedScreens/Post RelatedPages/comentPage.dart';
 import '../profileInfoScreen.dart';
 class CurrentUserAllPostScreens extends StatefulWidget {
   const CurrentUserAllPostScreens({Key? key}) : super(key: key);

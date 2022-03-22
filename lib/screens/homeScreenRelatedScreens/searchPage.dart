@@ -213,11 +213,11 @@ class _SearchScreenState extends State<SearchScreen> {
                             ListTile(
                                 leading: InkWell(
                                   onTap: () {
-                                    Navigator.push(
+                                 /*   Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                ProfileInfo()));
+                                                ProfileInfo()));*/
                                   },
                                   child: ClipOval(
                                     child: loading != true
@@ -444,11 +444,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ListTile(
                                     leading: InkWell(
                                       onTap: () {
-                                        Navigator.push(
+                                       /* Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ProfileInfo()));
+                                                    ProfileInfo()));*/
                                       },
                                       child: ClipOval(
                                         child: loading != true

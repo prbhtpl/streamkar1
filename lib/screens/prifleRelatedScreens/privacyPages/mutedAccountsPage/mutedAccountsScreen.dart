@@ -65,10 +65,10 @@ class _MutedAccountsState extends State<MutedAccounts> {
                             ),
                             leading: InkWell(
                               onTap: () {
-                                Navigator.push(
+                              /*  Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => ProfileInfo()));
+                                        builder: (context) => ProfileInfo()));*/
                               },
                               child: Stack(children: [
                                 CircleAvatar(

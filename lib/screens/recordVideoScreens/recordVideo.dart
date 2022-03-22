@@ -52,6 +52,7 @@ class _RecordVideoState extends State<RecordVideo>
   XFile? GalleryvideoFile;
   File? video;
   VideoPlayerController? videoController;
+  bool clicked = false;
   VoidCallback? videoPlayerListener;
   bool enableAudio = true;
   double _minAvailableExposureOffset = 0.0;
@@ -147,20 +148,26 @@ class _RecordVideoState extends State<RecordVideo>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(backgroundColor: Color(0xFF9D6EF7),toolbarHeight: 45,elevation: 0.0,),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF9D6EF7),
+        toolbarHeight: 45,
+        elevation: 0.0,
+      ),
       key: _scaffoldKey,
       body: SafeArea(
-        child: Container(decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [
-            Colors.lightBlueAccent.shade200,
-            Colors.black12,
-            Color(0xFF9D6EF7),
-            Colors.lightBlueAccent.shade200,
-            Color(0xFF9D6EF7),
-            Colors.black12,
-            Color(0xFF9D6EF7),
-          ], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        ),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              Colors.lightBlueAccent.shade200,
+              Colors.black12,
+              Color(0xFF9D6EF7),
+              Colors.lightBlueAccent.shade200,
+              Color(0xFF9D6EF7),
+              Colors.black12,
+              Color(0xFF9D6EF7),
+            ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+          ),
           child: Stack(
             children: <Widget>[
               Padding(
@@ -219,7 +226,8 @@ class _RecordVideoState extends State<RecordVideo>
         ),
       );
     } else {
-      return Column(mainAxisAlignment: MainAxisAlignment.end,
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
             height: MediaQuery.of(context).size.height / 1.3,
@@ -229,8 +237,8 @@ class _RecordVideoState extends State<RecordVideo>
               onPointerUp: (_) => _pointers--,
               child: CameraPreview(
                 controller!,
-                child: LayoutBuilder(
-                    builder: (BuildContext context, BoxConstraints constraints) {
+                child: LayoutBuilder(builder:
+                    (BuildContext context, BoxConstraints constraints) {
                   return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onScaleStart: _handleScaleStart,
@@ -331,26 +339,11 @@ class _RecordVideoState extends State<RecordVideo>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => addSongs()));
-                    },
-                    icon: Icon(
-                      CupertinoIcons.music_note_2,
-                      color: Colors.white,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.flash_on),
-                    color: Colors.white,
-                    onPressed:
-                        controller != null ? onFlashModeButtonPressed : null,
-                  ),
-                ],
+              IconButton(
+                icon: const Icon(Icons.flash_on),
+                color: Colors.white,
+                onPressed:
+                    controller != null ? onFlashModeButtonPressed : null,
               ),
               // The exposure and focus mode are currently not supported on the web.
               ...!kIsWeb
@@ -376,13 +369,23 @@ class _RecordVideoState extends State<RecordVideo>
                 color: Colors.white,
                 onPressed: controller != null ? onAudioModeButtonPressed : null,
               ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(onPressed: (){pickVideo();},icon: Icon(CupertinoIcons.circle_grid_3x3_fill,color: Colors.white,),),
                   IconButton(
-                    icon: Icon(controller?.value.isCaptureOrientationLocked ?? false
-                        ? Icons.screen_lock_rotation
-                        : Icons.screen_rotation),
+                    onPressed: () {
+                      pickVideo();
+                    },
+                    icon: Icon(
+                      CupertinoIcons.circle_grid_3x3_fill,
+                      color: Colors.white,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                        controller?.value.isCaptureOrientationLocked ?? false
+                            ? Icons.screen_lock_rotation
+                            : Icons.screen_rotation),
                     color: Colors.white,
                     onPressed: controller != null
                         ? onCaptureOrientationLockButtonPressed
@@ -399,23 +402,27 @@ class _RecordVideoState extends State<RecordVideo>
       ),
     );
   }
+
   Future pickVideo() async {
     ImagePicker _picker = ImagePicker();
 
-    final pickedFile = await _picker.pickVideo(source: ImageSource.gallery,maxDuration: const Duration(seconds: 120)).then((xFile) {
+    final XFile? file = await _picker
+        .pickVideo(
+            source: ImageSource.gallery,
+            maxDuration: const Duration(seconds: 120))
+        .then((xFile) {
       if (xFile != null) {
-       var selectedImage = File(GalleryvideoFile!.path);
-print('here:${GalleryvideoFile!.path}');
-       /* Navigator.push(
+        // var selectedImage = File(XFile.path);
+        print('here:${xFile.path}');
+        Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => editVideoScreen(
-                    filePath:
-                    File(GalleryvideoFile!.path))));*/
-
+                builder: (context) =>
+                    editVideoScreen(filePath: File(xFile.path))));
       }
     });
   }
+
   Widget _flashModeControlRowWidget() {
     return SizeTransition(
       sizeFactor: _flashModeControlRowAnimation,
@@ -669,19 +676,28 @@ print('here:${GalleryvideoFile!.path}');
             ),
             color: Colors.red,
             onPressed: () {
-
-              onStopButtonPressed();
-              stopTimer(reset: true);
-
-
+              setState(() {
+                onStopButtonPressed();
+                stopTimer(reset: true);
+              });
             },
           ),
         ),
-        InkWell(/*onLongPress: (){  startTimer();
+        InkWell(
+          /*onLongPress: (){  startTimer();
         onVideoRecordButtonPressed();},*/
           onTap: () {
-            startTimer();
-            onVideoRecordButtonPressed();
+            setState(() {
+              clicked = !clicked;
+              print('clicked' + clicked.toString());
+              if (clicked != false) {
+                startTimer();
+                onVideoRecordButtonPressed();
+              } else {
+                stopTimer(reset: true);
+                onStopButtonPressed();
+              }
+            });
           },
           child: Column(
             children: [
@@ -715,9 +731,17 @@ print('here:${GalleryvideoFile!.path}');
                           ),
                           color: Colors.red,
                           onPressed: () {
-                            startTimer();
-                            onVideoRecordButtonPressed();
-
+                            setState(() {
+                              clicked = !clicked;
+                              print('clicked' + clicked.toString());
+                              if (clicked != false) {
+                                startTimer();
+                                onVideoRecordButtonPressed();
+                              } else {
+                                stopTimer(reset: true);
+                                onStopButtonPressed();
+                              }
+                            });
                           },
                         ),
                       ],
@@ -1121,14 +1145,15 @@ print('here:${GalleryvideoFile!.path}');
     Future.delayed(Duration(seconds: 60)).then((_) {
       onStopButtonPressed();
       stopTimer();
-    } );
+    });
   }
-void resetTimer()=>setState(()=>seconds=maxSeconds);
-  void stopTimer({bool reset=true}) {
+
+  void resetTimer() => setState(() => seconds = maxSeconds);
+  void stopTimer({bool reset = true}) {
     setState(() {
-      if(reset){
+      if (reset) {
         resetTimer();
-      }else{}
+      } else {}
       timer?.cancel();
     });
   }
