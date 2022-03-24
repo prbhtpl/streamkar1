@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+import '../../bottomNavigationBar/bottomNavigation.dart';
 import '../../helper/helperFunctions.dart';
 class EditedVideo extends StatefulWidget {
   const EditedVideo({Key? key ,required this.filePath}) : super(key: key);
@@ -51,6 +52,40 @@ class _EditedVideoState extends State<EditedVideo> {
       print(e);
     }
   }
+  Future uploadVideoPost() async {
+    EasyLoading.show(status: 'Posting...');
+    var uploadUrl =
+    Uri.parse("https://vinsta.ggggg.in.net/api/postVideo");
+    var requestMulti = http.MultipartRequest('POST', uploadUrl);
+    var id = await HelperFunctions.getVStarUniqueIdkey();
+    requestMulti.fields['user_id'] = id.toString();
+    requestMulti.fields['content'] = captionController.text;
+    requestMulti.fields['songname'] ='Songs';
+    requestMulti.fields['location'] ='lko';
+    if(widget.filePath!=null){
+      requestMulti.files.add(await http.MultipartFile.fromPath('video', widget.filePath));
+      var res=await requestMulti.send();
+
+      if(res.statusCode==200){
+        print("Fiile Pathasdasdsa"+widget.filePath);
+        EasyLoading.showSuccess('Posted');
+        EasyLoading.dismiss();
+        setState(() {
+          Navigator.pushReplacement(this.context, MaterialPageRoute(builder: (context)=>BottomNavigation(screenId: 0)));
+        });
+        print('Upload Data');
+
+      }else{
+        Fluttertoast.showToast(msg: 'Something went wrong upload again');
+      }
+      print(requestMulti.fields);
+      // print(fileName);
+      return res.reasonPhrase;
+    }else {
+      print('Image is not selected');
+    }
+
+  }
   @override
   void initState() {
     getUserDetails();
@@ -65,7 +100,6 @@ class _EditedVideoState extends State<EditedVideo> {
   Future _initVideoPlayer() async {
     _videoPlayerController = VideoPlayerController.file(File(widget.filePath));
     await _videoPlayerController.initialize();
-    await _videoPlayerController.setLooping(true);
     await _videoPlayerController.play();
   }
   @override
@@ -89,7 +123,7 @@ class _EditedVideoState extends State<EditedVideo> {
           IconButton(
             onPressed: () {
 
-              /* uploadPost();*/
+               uploadVideoPost();
             },
             icon: Icon(CupertinoIcons.checkmark_alt),
             color: Colors.black,

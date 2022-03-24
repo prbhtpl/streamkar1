@@ -621,17 +621,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
           body: SafeArea(
             child: Column(
               children: [
-                Container(
+              /*  Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
+                        Colors.lightBlueAccent.shade200,
+                        Colors.blue,
                         Color(0xFF9D6EF7),
-                        Colors.lightBlueAccent.shade200
+                        Colors.lightBlueAccent.shade200,
+                        Color(0xFF9D6EF7),
+                        Color(0xFF9D6EF7),
+                        Colors.blueAccent
                       ],
-                      begin: const FractionalOffset(0.0, 0.0),
-                      end: const FractionalOffset(0.9, 0.2),
-                      stops: [0.0, 1.0],
-                    ),
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight
+                      ,),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -649,7 +653,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ))
                     ],
                   ),
-                ),
+                ),*/
                 Stack(
                   children: [
                     Container(
@@ -659,20 +663,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         gradient: LinearGradient(
                             colors: [
                               Colors.lightBlueAccent.shade200,
-                              Colors.black12,
+                              Colors.blue,
                               Color(0xFF9D6EF7),
                               Colors.lightBlueAccent.shade200,
                               Color(0xFF9D6EF7),
                               Color(0xFF9D6EF7),
+                              Colors.blueAccent
                             ],
                             begin: Alignment.topLeft,
-                            end: Alignment.bottomRight),
+                            end: Alignment.bottomRight
+                        ,),
                       ),
                     ),
                     Container(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
+                        children: <Widget>[Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10.0,top: 10),
+                            child: IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SettingScreen()));
+                                },
+                                icon: Icon(
+                                  CupertinoIcons.settings_solid,
+                                  color: Colors.white,size: 35,
+                                )),
+                          )
+                        ],
+                      ),
                           Padding(
                             padding: const EdgeInsets.only(top: 20.0),
                             child: Center(

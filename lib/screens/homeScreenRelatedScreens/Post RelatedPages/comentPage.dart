@@ -465,7 +465,7 @@ class _CommentScreenState extends State<CommentScreen> {
                               } else {
                                 status = 1;
                               }
-                              print("fill:" + fill.toString());
+                              print("status:::::" + status.toString());
                               print(status);
                               LikeUnlikeComments(
                                   commentList[index]['id'], status);

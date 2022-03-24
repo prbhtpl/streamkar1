@@ -150,7 +150,7 @@ class _RecordVideoState extends State<RecordVideo>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF9D6EF7),
+        backgroundColor: Color(0xFF163A85),
         toolbarHeight: 45,
         elevation: 0.0,
       ),
@@ -158,15 +158,15 @@ class _RecordVideoState extends State<RecordVideo>
       body: SafeArea(
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [
-              Colors.lightBlueAccent.shade200,
-              Colors.black12,
-              Color(0xFF9D6EF7),
-              Colors.lightBlueAccent.shade200,
-              Color(0xFF9D6EF7),
-              Colors.black12,
-              Color(0xFF9D6EF7),
-            ], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: LinearGradient(
+                colors: [
+                  Colors.blue,
+                  Colors.black,
+                ],
+                begin: const FractionalOffset(0.0, 0.0),
+                end: const FractionalOffset(1.0, 0.0),
+                stops: [0.0, 1.0],
+                tileMode: TileMode.clamp),
           ),
           child: Stack(
             children: <Widget>[
@@ -339,11 +339,27 @@ class _RecordVideoState extends State<RecordVideo>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.flash_on),
-                color: Colors.white,
-                onPressed:
-                    controller != null ? onFlashModeButtonPressed : null,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      icon: const Icon(
+                        CupertinoIcons.music_note_2,
+                      ),
+                      color: Colors.white,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => addSongs()));
+                      }),
+                  IconButton(
+                    icon: const Icon(Icons.flash_on),
+                    color: Colors.white,
+                    onPressed:
+                        controller != null ? onFlashModeButtonPressed : null,
+                  ),
+                ],
               ),
               // The exposure and focus mode are currently not supported on the web.
               ...!kIsWeb
@@ -409,16 +425,23 @@ class _RecordVideoState extends State<RecordVideo>
     final XFile? file = await _picker
         .pickVideo(
             source: ImageSource.gallery,
-            maxDuration: const Duration(seconds: 120))
+            maxDuration: const Duration(seconds: 60))
         .then((xFile) {
       if (xFile != null) {
         // var selectedImage = File(XFile.path);
         print('here:${xFile.path}');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    editVideoScreen(filePath: File(xFile.path))));
+        VideoPlayerController testLengthController = new VideoPlayerController.file(File(xFile.path));
+        if (testLengthController.value.duration.inMinutes > 2){
+          xFile = null;
+          Fluttertoast.showToast(msg: 'we only allow videos that are shorter than 1 minute!', timeInSecForIosWeb: 3);
+        }else{
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      editVideoScreen(filePath: File(xFile!.path))));
+        }
+
       }
     });
   }

@@ -8,6 +8,8 @@ class HelperFunctions {
   static String sharedPreferenceCurrentUserkey = 'CurrentUserId';
   static String sharedPreferenceUpdatedNamekey = 'UpdatedUSERNAMEKEY';
   static String sharedPreferenceVStarUniqueIdkey = '1';
+  static String sharedPreferenceVideoId = '0';
+
   // saving data in sharedPreference
   static Future<bool> saveuserLoggedInSharedPreference(
       bool isuserLoggedIn) async {
@@ -21,6 +23,15 @@ class HelperFunctions {
 
     return await prefs.setString(sharedPreferenceCurrentUserkey, id);
   }
+  static Future saveuserVideoId(int id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    return await prefs.setInt(sharedPreferenceVideoId, id);
+  }
+
+
+
+
   static Future savePreferenceVStarUniqueIdkey(int id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -87,5 +98,10 @@ class HelperFunctions {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     return await prefs.getInt(sharedPreferenceVStarUniqueIdkey);
+  }
+  static Future<int> getVedioID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    return await prefs.getInt(sharedPreferenceVideoId);
   }
 }

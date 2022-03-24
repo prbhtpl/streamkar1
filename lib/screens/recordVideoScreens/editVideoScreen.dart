@@ -37,13 +37,7 @@ class _editVideoScreenState extends State<editVideoScreen> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _exportingProgress.dispose();
-    _isExporting.dispose();
-    _controller.dispose();
-    super.dispose();
-  }
+
 
   void _openCropScreen() => context.to(CropScreen(controller: _controller));
 
@@ -107,7 +101,13 @@ class _editVideoScreenState extends State<editVideoScreen> {
       },
     );
   }
-
+  @override
+  void dispose() {
+  /*  _exportingProgress.dispose();
+    _isExporting.dispose();*/
+    _controller.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -236,7 +236,7 @@ class _editVideoScreenState extends State<editVideoScreen> {
         height: height,
         child: Row(
           children: [
-         /*   Expanded(
+            /*   Expanded(
               child: GestureDetector(
                 onTap: () => _controller.rotate90Degrees(RotateDirection.left),
                 child: Icon(
@@ -271,9 +271,9 @@ class _editVideoScreenState extends State<editVideoScreen> {
             ),*/
             Expanded(
               child: GestureDetector(
-                onTap: ()
-    { Navigator.push(context,
-        MaterialPageRoute(builder: (context) => addSongs()));
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => addSongs()));
                 },
                 child: Icon(
                   CupertinoIcons.music_note_2,
@@ -284,15 +284,18 @@ class _editVideoScreenState extends State<editVideoScreen> {
             Expanded(
               child: TextButton(
                 onPressed: _exportVideo,
-
-                child: Align(alignment: Alignment.topRight,
+                child: Align(
+                  alignment: Alignment.topRight,
                   child: Text(
-                  'Next',style: TextStyle(color: Colors.white,fontSize: 15),
+                    'Next',
+                    style: TextStyle(color: Colors.white, fontSize: 15),
                   ),
                 ),
               ),
             ),
-            SizedBox(width: 10,)
+            SizedBox(
+              width: 10,
+            )
           ],
         ),
       ),
