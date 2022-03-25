@@ -25,12 +25,16 @@ class CommentScreen extends StatefulWidget {
 
 class _CommentScreenState extends State<CommentScreen> {
   TextEditingController postText = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   bool loading = false;
   List related_product = [];
   List commentList = [];
+  List getReplyComments = [];
   List profile = [];
   List getListLikeDisLikeStatus = [];
   String ImagelUrl = '';
+  int Index = 0;
+
   int status = 0;
   Future PostComment(
     int following_id,
@@ -99,6 +103,70 @@ class _CommentScreenState extends State<CommentScreen> {
         );
       },
     );
+  }
+
+  Future<void> _showMyReplyDialog(BuildContext context, int commentID) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete message ? '),
+          actions: <Widget>[
+            Row(
+              children: [
+                TextButton(
+                  child: const Text(
+                    'Cancel',
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child:
+                      const Text('delete', style: TextStyle(color: Colors.red)),
+                  onPressed: () {
+                    deleteReplyComment(commentID);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future deleteReplyComment(
+    int commentID,
+  ) async {
+    var api =
+        Uri.parse("https://vinsta.ggggg.in.net/api/replyImgCommentDelete");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "id": commentID.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+      GetComments();
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: 'Deleted');
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future deleteComment(
@@ -263,6 +331,64 @@ class _CommentScreenState extends State<CommentScreen> {
 // getLikeDisLikeStatus(commentList[0]['id']);
     try {
       if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future GetReplyComments(int commentId) async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/replycommentImglist");
+
+    Map mapeddate = {"comment_id": commentId.toString()};
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+      getReplyComments = res['response_replycommentList'];
+
+      loading = true;
+    });
+// getLikeDisLikeStatus(commentList[0]['id']);
+    try {
+      if (response.statusCode == 200) {
+        /* Fluttertoast.showToast(msg: 'Updated');*/
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future InserCommentReply(int commentId) async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/replycommentImage");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": id1.toString(),
+      "comment_id": commentId.toString(),
+      "replycomment": postText.text.toString()
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere1::" + response.body);
+    setState(() {
+     /* commentList = res['response_commentslist'];*/
+      postText.clear();
+      loading = true;
+    });
+// getLikeDisLikeStatus(commentList[0]['id']);
+    try {
+      if (response.statusCode == 200) {
         /* Fluttertoast.showToast(msg: 'Updated');*/
       }
     } catch (e) {
@@ -349,6 +475,7 @@ class _CommentScreenState extends State<CommentScreen> {
                       border: Border.all(color: Colors.white54, width: 0),
                     ),
                     child: TextFormField(
+                      focusNode: _focusNode,
                       controller: postText,
                       decoration: InputDecoration(
                         fillColor: Colors.white54,
@@ -364,10 +491,17 @@ class _CommentScreenState extends State<CommentScreen> {
                   ),
                   InkWell(
                     onTap: () {
-                      postText.text.isNotEmpty
-                          ? PostComment(
-                              widget.followingId, widget.friendId, widget.id)
-                          : print('null');
+                      if (postText.text.isNotEmpty) {
+                        if (_focusNode.hasFocus != false) {
+                          InserCommentReply(commentList[Index]['id']);
+                          print('asd');
+                        } else {
+                          PostComment(
+                              widget.followingId, widget.friendId, widget.id);
+                        }
+                      } else {
+                        print('null');
+                      }
                     },
                     child: Text(
                       'post',
@@ -400,129 +534,291 @@ class _CommentScreenState extends State<CommentScreen> {
           shrinkWrap: true,
           itemCount: commentList == null ? 0 : commentList.length,
           itemBuilder: (BuildContext context, int index) {
-            return InkWell(
-              onLongPress: () =>
-                  _showMyDialog(context, commentList[index]['id']),
-              child: Column(
-                children: [
-                  ListTile(
-                      leading: InkWell(
-                        onTap: () {
-                          /*Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ProfileInfo()));*/
-                        },
-                        child: ClipOval(
-                          child: loading != true
-                              ? Container(
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                )
-                              : Image.network(
-                                  commentList[index]['userphoto'] != null
-                                      ? commentList[index]['userphoto']
-                                      : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
-                                          .toString(),
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                      ),
-                      trailing: ButtonTheme(
-                        minWidth: 12,
-                        height: 14,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        child: IconButton(
-                          icon: commentList[index]['status_like'] == null ||
-                                  commentList[index]['status_like'] == 0
-                              ? Icon(
-                                  CupertinoIcons.heart,
-                                  size: 18,
-                                )
-                              : Icon(
-                                  CupertinoIcons.heart_solid,
-                                  color: Colors.red,
-                                  size: 18,
-                                ),
-                          onPressed: () {
-                            setState(() {
-                              if (commentList[index]['status_like'] == null ||
-                                  commentList[index]['status_like'] == 0) {
-                                fill = false;
-                              } else {
-                                fill = true;
-                              }
-                              print("bool::::" + fill.toString());
-                              fill = !fill;
-
-                              if (fill == false) {
-                                status = 0;
-                              } else {
-                                status = 1;
-                              }
-                              print("status:::::" + status.toString());
-                              print(status);
-                              LikeUnlikeComments(
-                                  commentList[index]['id'], status);
-                            });
+            return Column(
+              children: [
+                InkWell(
+                    onLongPress: () =>
+                        _showMyDialog(context, commentList[index]['id']),
+                    child: ListTile(
+                        leading: InkWell(
+                          onTap: () {
+                            /*Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfileInfo()));*/
                           },
-                        ),
-                      ),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(commentList[index]['user_name'])),
-                          InkWell(
-                              child: Text(
-                            commentList[index]['comment'],
-                            style: TextStyle(fontSize: 20),
-                          )),
-                          Row(
-                            children: [
-                              Text(
-                                commentList[index]['created_at'],
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 10),
-                              ),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              InkWell(
-                                  onTap: () {},
-                                  child: Text(
-                                    'Likes',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 10),
-                                  )),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              InkWell(
-                                  onTap: () {},
-                                  child: Text(
-                                    'Reply',
-                                    style: TextStyle(
-                                        color: Colors.grey, fontSize: 10),
-                                  )),
-                            ],
+                          child: ClipOval(
+                            child: loading != true
+                                ? Container(
+                                    child: Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  )
+                                : Image.network(
+                                    commentList[index]['userphoto'] != null
+                                        ? commentList[index]['userphoto']
+                                        : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                                            .toString(),
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
-                        ],
-                      )),
-                  Divider(
-                    color: Colors.grey,
-                    thickness: 1,
-                  )
-                ],
-              ),
+                        ),
+                        trailing: ButtonTheme(
+                          minWidth: 12,
+                          height: 14,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                          ),
+                          child: IconButton(
+                            icon: commentList[index]['status_like'] == null ||
+                                    commentList[index]['status_like'] == 0
+                                ? Icon(
+                                    CupertinoIcons.heart,
+                                    size: 18,
+                                  )
+                                : Icon(
+                                    CupertinoIcons.heart_solid,
+                                    color: Colors.red,
+                                    size: 18,
+                                  ),
+                            onPressed: () {
+                              setState(() {
+                                if (commentList[index]['status_like'] == null ||
+                                    commentList[index]['status_like'] == 0) {
+                                  fill = false;
+                                } else {
+                                  fill = true;
+                                }
+                                print("bool::::" + fill.toString());
+                                fill = !fill;
+
+                                if (fill == false) {
+                                  status = 0;
+                                } else {
+                                  status = 1;
+                                }
+                                print("status:::::" + status.toString());
+                                print(status);
+                                LikeUnlikeComments(
+                                    commentList[index]['id'], status);
+                              });
+                            },
+                          ),
+                        ),
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(commentList[index]['user_name'])),
+                            InkWell(
+                                child: Text(
+                              commentList[index]['comment'],
+                              style: TextStyle(fontSize: 20),
+                            )),
+                            Row(
+                              children: [
+                                Text(
+                                  commentList[index]['created_at'],
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 10),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                InkWell(
+                                    onTap: () {},
+                                    child: Text(
+                                      'Likes',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 10),
+                                    )),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                InkWell(
+                                    onTap: () {
+                                      print('lol');
+                                      _focusNode.requestFocus();
+                                      setState(() {
+                                        _focusNode.hasFocus == true;
+                                        Index = index;
+                                        print('Index' + Index.toString());
+                                      });
+                                    },
+                                    child: Text(
+                                      'Reply',
+                                      style: TextStyle(
+                                          color: Colors.grey, fontSize: 10),
+                                    )),
+                              ],
+                            ),
+                            InkWell(
+                              onTap: () {
+                                GetReplyComments(commentList[index]['id']);
+                              },
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  /*${getReplyComments.length}*/ 'View all replies',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ))),
+                Padding(
+                  padding: const EdgeInsets.only(left: 60.0),
+                  child: alllreply(),
+                )
+              ],
             );
           }),
     );
+  }
+
+  Widget alllreply() {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: getReplyComments == null ? 0 : getReplyComments.length,
+        itemBuilder: (BuildContext context, int index) {
+          return InkWell(
+            onLongPress: () =>
+                _showMyReplyDialog(context, getReplyComments[index]['id']),
+            child: Column(
+              children: [
+                ListTile(
+                    leading: InkWell(
+                      onTap: () {
+/*Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileInfo()));*/
+                      },
+                      child: ClipOval(
+                        child: loading != true
+                            ? Container(
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            : Image.network(
+                                getReplyComments[index]['userphoto'] != null
+                                    ? getReplyComments[index]['userphoto']
+                                    : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                                        .toString(),
+                                width: 30,
+                                height: 30,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ),
+                    /*  trailing: ButtonTheme(
+                      minWidth: 12,
+                      height: 14,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                      child: IconButton(
+                        icon: commentList[index]['status_like'] == null ||
+                            commentList[index]['status_like'] == 0
+                            ? Icon(
+                          CupertinoIcons.heart,
+                          size: 18,
+                        )
+                            : Icon(
+                          CupertinoIcons.heart_solid,
+                          color: Colors.red,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (commentList[index]['status_like'] == null ||
+                                commentList[index]['status_like'] == 0) {
+                              fill = false;
+                            } else {
+                              fill = true;
+                            }
+                            print("bool::::" + fill.toString());
+                            fill = !fill;
+
+                            if (fill == false) {
+                              status = 0;
+                            } else {
+                              status = 1;
+                            }
+                            print("status:::::" + status.toString());
+                            print(status);
+                            LikeUnlikeComments(
+                                commentList[index]['id'], status);
+                          });
+                        },
+                      ),
+                    ),*/
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(getReplyComments[index]['user_name'])),
+                        InkWell(
+                            child: Text(
+                          getReplyComments[index]['replycomment'],
+                          style: TextStyle(fontSize: 15),
+                        )),
+                        /*       Row(
+                          children: [
+                           */ /* Text(
+                              commentList[index]['created_at'],
+                              style:
+                              TextStyle(color: Colors.grey, fontSize: 10),
+                            ),*/ /*
+                            SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                                onTap: () {},
+                                child: Text(
+                                  'Likes',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 10),
+                                )),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                                onTap: () {
+                                  print('lol');
+                                  _focusNode.requestFocus();
+                                  setState(() {
+                                    _focusNode.hasFocus==true;
+                                  });
+
+                                },
+                                child: Text(
+                                  'Reply',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 10),
+                                )),
+                          ],
+                        ),*/
+                        /*  InkWell(onTap: (){
+                         // alllreply();
+                        },
+                          child:  Align(alignment: Alignment.center,child:Text(
+                            'View all replies',
+                            style:
+                            TextStyle(color: Colors.grey, fontSize: 12),
+                          ),),
+                        ),*/
+                      ],
+                    )),
+              ],
+            ),
+          );
+        });
   }
 }

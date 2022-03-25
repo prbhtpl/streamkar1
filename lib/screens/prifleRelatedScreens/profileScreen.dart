@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:untitled/helper/helperFunctions.dart';
+import 'package:untitled/screens/prifleRelatedScreens/Earnings/officialTalentScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/editphotoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/profileInfoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/settingPage.dart';
@@ -488,7 +489,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   SizedBox(
                                     width: 10,
                                   ),
-                                  SizedBox(width: 80, child: Text('earings')),
+                                  InkWell(onTap: (){
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>OfficialTalent()));
+                                  },child:Container(height:30,width: 80, child: Text('earings'))),
                                 ],
                               ),
                             ],

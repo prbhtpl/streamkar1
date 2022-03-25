@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:marquee_widget/marquee_widget.dart';
 import 'package:preload_page_view/preload_page_view.dart';
 import 'package:untitled/screens/homeScreenRelatedScreens/notificationScreen.dart';
+import 'package:untitled/screens/reelSectionPages/reelsComment.dart';
 
 import 'package:untitled/screens/reelSectionPages/songSection.dart';
 
@@ -139,16 +140,18 @@ class _StatusState extends State<Status> {
   List Reel = [];
   List profile = [];
   List LikkeStatus = [];
-  List PCommentList=[];
+  List PCommentList = [];
   int status = 0;
   int CommentLikestatus = 0;
   var TotalCount = '';
+  List getReplyComments = [];
   var TotalCommentCount = '';
   var VideoId = 0;
   String name = '';
   String ImagelUrl = '';
   bool loading = false;
-
+  int Index = 0;
+  final FocusNode _focusNode = FocusNode();
   Future<void> share() async {
     await FlutterShare.share(
         title: 'Example share',
@@ -228,11 +231,7 @@ class _StatusState extends State<Status> {
     }
   }
 
-  Future<void> _initController(int index) async {
-    /* var controller = VideoPlayerController.network(_urls.elementAt(index));
-    _controllers[_urls.elementAt(index)] = controller;*/ /*
-    await controller.initialize();*/
-  }
+
   Future ReelsList() async {
     EasyLoading.show(status: 'Loading...');
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/videoList");
@@ -257,13 +256,14 @@ class _StatusState extends State<Status> {
           Reel = res['response_videoList'];
           loading = true;
 
-           // firstVideoUrl=Reel[0]['video'];
+          // firstVideoUrl=Reel[0]['video'];
           //print("firstVideoUrl"+firstVideoUrl);
         });
         await HelperFunctions.saveuserVideoId(Reel[0]['id']);
-      //  initVideo();
+        //  initVideo();
         LikeCount();
-        GetLikeUnLike();PostCommentList(VideoId);
+        GetLikeUnLike();
+        VideoCommentList(VideoId);
 
         print('id' + Reel[0]['id']);
         Fluttertoast.showToast(msg: 'Updated');
@@ -298,7 +298,7 @@ class _StatusState extends State<Status> {
     print("hererere" + response.body);
     setState(() {
       Comment.clear();
-     CommentCount();
+      CommentCount();
     });
 
     try {
@@ -373,11 +373,19 @@ class _StatusState extends State<Status> {
     }
   }
 
-  Future CommentLikeUnlike(int CommentId, int statusLike,int videoId) async {
+  Future CommentLikeUnlike(int CommentId, int statusLike, int videoId) async {
     /* EasyLoading.show(status: 'Loading...');*/
+      var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    print( "vcomment_id"+ CommentId.toString()+
+        "user_id"+ id1.toString()
+        +
+        "video_id"+
+        videoId.toString()+
+        "status_comlike"+ statusLike.toString());
+
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/videoCommentLike");
 
-    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+  /*  var id1 = await HelperFunctions.getVStarUniqueIdkey();*/
 
     Map mapeddate = {
       "vcomment_id": CommentId.toString(),
@@ -394,7 +402,7 @@ class _StatusState extends State<Status> {
     var res = await json.decode(response.body);
     print("laparwah" + response.body);
     setState(() {
-
+      VideoCommentList(videoId.toInt());
     });
 
     try {
@@ -406,29 +414,105 @@ class _StatusState extends State<Status> {
       print(e);
     }
   }
-void initVideo()
-{
-  _controller = VideoPlayerController.network(firstVideoUrl)
-    ..initialize().then((_) {
-      _controller?.play();
-      _controller?.setLooping(true);
-      // Ensure the first frame is shown after the video is initialized
-      setState(() {});
-    });
-}
 
-  Future PostCommentList(int video_ID, ) async {
+  void initVideo() {
+    _controller = VideoPlayerController.network(firstVideoUrl)
+      ..initialize().then((_) {
+        _controller?.play();
+        _controller?.setLooping(true);
+        // Ensure the first frame is shown after the video is initialized
+        setState(() {});
+      });
+  }
+
+  Future VideoCommentList(
+    int video_ID,
+  ) async {
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
 
-    /* EasyLoading.show(status: 'Loading...');*/
+     EasyLoading.show(status: 'Loading...');
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/videoCommentList");
 
     /*  print("id1" + id1.toString());
     print("video_id" + video_ID.toString());
     print("status_vilike" + statusLike.toString());*/
 
+    Map mapeddate = {"video_id": video_ID.toString()};
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+      PCommentList = res['response_videocommentlist'];
+      loading = true;
+    });
+
+    try {
+      if (response.statusCode == 200) {
+          EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future GetReplyComments(int commentId) async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/replycommentVideolist");
+
+    Map mapeddate = {"comment_id": commentId.toString()};
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere1111" + response.body);
+    setState(() {
+      getReplyComments = res['response_replycommentvideoList'];
+
+      loading = true;
+    });
+// getLikeDisLikeStatus(commentList[0]['id']);
+    try {
+      if (response.statusCode == 200) {
+        /* Fluttertoast.showToast(msg: 'Updated');*/
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future GetCommentsLikeStatus() async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/videoCommentLikelist");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {"user_id": id1.toString(), "vcomment_id": 1};
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {});
+
+    try {
+      if (response.statusCode == 200) {}
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future deleteVideoComment(
+      int commentID,
+      ) async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/videoCommentDelete");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
-      "id":video_ID.toString()
+      "id": commentID.toString(),
     };
 
     final response = await http.post(
@@ -437,16 +521,42 @@ void initVideo()
     );
 
     var res = await json.decode(response.body);
-    /*print("hererere" + response.body);*/
+    print("hererere" + response.body);
     setState(() {
-     PCommentList=res['response_videocommentlist'];
-     loading=true;
+      VideoCommentList(VideoId);
     });
 
     try {
       if (response.statusCode == 200) {
-        /*  EasyLoading.dismiss();*/
-        Fluttertoast.showToast(msg: 'Updated');
+        Fluttertoast.showToast(msg: 'Deleted');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future deleteReplyVideoComment(
+      int commentID,
+      ) async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/replyVideoCommentDelete");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "id": commentID.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+      VideoCommentList(VideoId);
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: 'Deleted');
       }
     } catch (e) {
       print(e);
@@ -464,24 +574,122 @@ void initVideo()
 
     var res = await json.decode(response.body);
     print("hererere" + response.body);
-    setState(() { loading = true;
-    profile = res['response_getUserProfile'];
-    print(profile);
-    if( profile[0]['userphoto']==null){
-      ImagelUrl= 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'.toString();
-    }else{ ImagelUrl = profile[0]['userphoto'].toString();
+    setState(() {
+      loading = true;
+      profile = res['response_getUserProfile'];
+      print(profile);
+      if (profile[0]['userphoto'] == null) {
+        ImagelUrl =
+            'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                .toString();
+      } else {
+        ImagelUrl = profile[0]['userphoto'].toString();
+      }
 
-
-    }
-
-    name = profile[0]['user_name'].toString();
-
-
+      name = profile[0]['user_name'].toString();
     });
 
     try {
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) {}
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future<void> _showMyDialog(BuildContext context, int commentID) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete message ? '),
+          actions: <Widget>[
+            Row(
+              children: [
+                TextButton(
+                  child: const Text(
+                    'Cancel',
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child:
+                  const Text('delete', style: TextStyle(color: Colors.red)),
+                  onPressed: () {
+                deleteVideoComment(commentID);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Future<void> _showMyReplyDialog(BuildContext context, int commentID) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete message ? '),
+          actions: <Widget>[
+            Row(
+              children: [
+                TextButton(
+                  child: const Text(
+                    'Cancel',
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child:
+                  const Text('delete', style: TextStyle(color: Colors.red)),
+                  onPressed: () {
+                deleteReplyVideoComment(commentID);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Future InserCommentReply(int commentId) async {
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    print("asdasdasd"+commentId.toString());
+    print("asdasdasd"+id1.toString());
+    print("asdasdasd"+Comment.text.toString());
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/replycommentsVideo");
 
+    Map mapeddate = {
+      "user_id": id1.toString(),
+      "comment_id": commentId.toString(),
+      "replycomment": Comment.text
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere1::" + response.body);
+    setState(() {
+      /*commentList = res['response_commentslist'];*/
+      Comment.clear();
+      loading = true;
+    });
+// getLikeDisLikeStatus(commentList[0]['id']);
+    try {
+      if (response.statusCode == 200) {
+        /* Fluttertoast.showToast(msg: 'Updated');*/
       }
     } catch (e) {
       print(e);
@@ -489,7 +697,6 @@ void initVideo()
   }
   @override
   void initState() {
-
     CommentCount();
     getUserDetails();
     initVideo();
@@ -504,8 +711,8 @@ void initVideo()
     return PreloadPageView.builder(
       onPageChanged: (index) async {
         setState(() {
-          firstVideoUrl=Reel[index]['video'];
-          print('firstVideoUrl'+firstVideoUrl.toString());
+          firstVideoUrl = Reel[index]['video'];
+          print('firstVideoUrl' + firstVideoUrl.toString());
         });
         await HelperFunctions.saveuserVideoId(Reel[index]['id']);
         VideoId = await HelperFunctions.getVedioID();
@@ -520,7 +727,6 @@ void initVideo()
       itemCount: Reel == null ? 0 : Reel.length,
       preloadPagesCount: 5,
       itemBuilder: (BuildContext context, int index) {
-
         return SingleChildScrollView(
           child: Container(
               height: MediaQuery.of(context).size.height,
@@ -583,12 +789,11 @@ void initVideo()
                                         Reel[index]['id']);
 
                                     setState(() {
-                                     LikkeStatus ==
-                                              null ||
-                                          LikkeStatus[0]["status_vilike"] == 0
-                                          ?
-                                        fill = false:
-                                        fill = true;
+                                      LikkeStatus == null ||
+                                              LikkeStatus[0]["status_vilike"] ==
+                                                  0
+                                          ? fill = false
+                                          : fill = true;
 
                                       print("bool::::" + fill.toString());
                                       fill = !fill;
@@ -601,11 +806,9 @@ void initVideo()
                                       print("fill:" + fill.toString());
                                       PostLikeUnlike(Reel[index]["id"], status);
                                     });
-
                                   },
-                                  child: LikkeStatus ==
-                                          null ||
-                                      LikkeStatus[0]["status_vilike"] == 0
+                                  child: LikkeStatus == null ||
+                                          LikkeStatus[0]["status_vilike"] == 0
                                       ? Icon(
                                           CupertinoIcons.heart,
                                           color: Colors.white,
@@ -628,8 +831,9 @@ void initVideo()
                                 InkWell(
                                   onTap: () {
                                     /* print(Reel[index]["id"]);*/
-                                    PostCommentList(Reel[index]["id"]);
-                                    onCommentBottomSheet(Reel[index]["id"]);
+                                    VideoCommentList(Reel[index]["id"]);
+                                   onCommentBottomSheet(Reel[index]["id"]);
+                                    //Navigator.push(context, MaterialPageRoute(builder: (context)=>AllReelsComments(videoId: Reel[index]["id"])));
                                   },
                                   child: Icon(
                                     CupertinoIcons.conversation_bubble,
@@ -1167,277 +1371,502 @@ void initVideo()
               builder: (BuildContext context) {
                 return StatefulBuilder(
                     builder: (BuildContext context, setState) {
-                  return loading!=false?Container(
-                    height: MediaQuery.of(context).size.height * 0.75,
-                    decoration: new BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: new BorderRadius.only(
-                        topLeft: const Radius.circular(25.0),
-                        topRight: const Radius.circular(25.0),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Divider(
-                          thickness: 5,
-                          indent: 160,
-                          endIndent: 160,
-                        ),
-                        Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(
-                                    Icons.face_rounded,
-                                    color: Colors.orange,
-                                  ),
-                                  Icon(
-                                    CupertinoIcons.heart_solid,
-                                    color: Colors.red,
-                                  ),
-                                  Icon(
-                                    Icons.face_rounded,
-                                    color: Colors.orange,
-                                  ),
-                                  Icon(
-                                    CupertinoIcons.heart_solid,
-                                    color: Colors.red,
-                                  ),
-                                  Icon(
-                                    Icons.face_rounded,
-                                    color: Colors.orange,
-                                  ),
-                                  Icon(
-                                    CupertinoIcons.heart_solid,
-                                    color: Colors.red,
-                                  ),
-                                  Icon(
-                                    Icons.face_rounded,
-                                    color: Colors.orange,
-                                  ),
-                                  Icon(
-                                    Icons.face_rounded,
-                                    color: Colors.orange,
-                                  ),
-                                ],
-                              ),
+                  return loading != false
+                      ? Container(
+                          height: MediaQuery.of(context).size.height * 0.75,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: new BorderRadius.only(
+                              topLeft: const Radius.circular(25.0),
+                              topRight: const Radius.circular(25.0),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                child:ClipOval(
-                                  child: loading != true
-                                      ? Container(
-                                    child: Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  )
-                                      : Image.network(
-                                    ImagelUrl != null
-                                        ? ImagelUrl.toString()
-                                        : 'No Image Found',
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                  ),
-                                  Container(
-                                    height: 45,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.6,
-                                    child: TextFormField(
-                                      controller: Comment,
-                                      decoration: InputDecoration(
-                                          enabledBorder:
-                                              const OutlineInputBorder(
-                                            // width: 0.0 produces a thin "hairline" border
-                                            borderSide: const BorderSide(
-                                                color: Colors.white,
-                                                width: 0.0),
-                                          ),
-                                          contentPadding: EdgeInsets.only(
-                                              top: 10, left: 10),
-                                          fillColor: Colors.white,
-                                          filled: true,
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              15,
-                                            ),
-                                          ),
-                                          hintText: 'Comment as prbhhtpl',
-                                          hintStyle: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.grey)),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async{
-                                      if (Comment.text.isEmpty) {
-                                        print('null');
-                                      } else {
-                                        await HelperFunctions.saveuserVideoId(videoId);
-                                        VideoId = await HelperFunctions.getVedioID();
-                                        print('videoId' + videoId.toString());
-                                        CommentOnPost(videoId);
-                                        PostCommentList(videoId);
-                                        Navigator.pop(context);
-
-                                      }
-                                    },
-                                    child: Text(
-                                      'post',
-                                      style: TextStyle(
-                                          color: Colors.lightBlueAccent),
-                                    ),
-                                  )
-                                ],
+                          ),
+                          child: Column(
+                            children: [
+                              Divider(
+                                thickness: 5,
+                                indent: 160,
+                                endIndent: 160,
                               ),
-                            ),
-                          ],
-                        ),
-                        Expanded(
-                          child: ListView.builder(
-                              itemCount:PCommentList==null?0:PCommentList.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Column(
-                                  children: [
-                                    ListTile(
-                                        leading: InkWell(
-                                          onTap: () {
-                                            /*    Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        ProfileInfo()));*/
-                                          },
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(
+                                          Icons.face_rounded,
+                                          color: Colors.orange,
+                                        ),
+                                        Icon(
+                                          CupertinoIcons.heart_solid,
+                                          color: Colors.red,
+                                        ),
+                                        Icon(
+                                          Icons.face_rounded,
+                                          color: Colors.orange,
+                                        ),
+                                        Icon(
+                                          CupertinoIcons.heart_solid,
+                                          color: Colors.red,
+                                        ),
+                                        Icon(
+                                          Icons.face_rounded,
+                                          color: Colors.orange,
+                                        ),
+                                        Icon(
+                                          CupertinoIcons.heart_solid,
+                                          color: Colors.red,
+                                        ),
+                                        Icon(
+                                          Icons.face_rounded,
+                                          color: Colors.orange,
+                                        ),
+                                        Icon(
+                                          Icons.face_rounded,
+                                          color: Colors.orange,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
                                           child: ClipOval(
                                             child: loading != true
                                                 ? Container(
-                                              child: Center(
-                                                child: CircularProgressIndicator(),
-                                              ),
-                                            )
-                                                : Image.network( PCommentList[index]['userphoto']!= null
-                                                ? PCommentList[index]['userphoto']
-                                                : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
-
-                                              width: 50,
-                                              height: 50,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        trailing: ButtonTheme(
-                                          minWidth: 12,
-                                          height: 14,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(18.0),
-                                          ),
-                                          child: IconButton(
-                                            icon: filled
-                                                ? Icon(
-                                                    CupertinoIcons.heart,
-                                                    size: 18,
+                                                    child: Center(
+                                                      child:
+                                                          CircularProgressIndicator(),
+                                                    ),
                                                   )
-                                                : Icon(
-                                                    CupertinoIcons.heart_solid,
-                                                    color: Colors.red,
-                                                    size: 18,
+                                                : Image.network(
+                                                    ImagelUrl != null
+                                                        ? ImagelUrl.toString()
+                                                        : 'No Image Found',
+                                                    width: 50,
+                                                    height: 50,
+                                                    fit: BoxFit.cover,
                                                   ),
-                                            onPressed: () {
-
-
-                                              setState(() {
-                                            /*    LikkeStatus ==
-                                                    null ||
-                                                    LikkeStatus[0]["status_vilike"] == 0
-                                                    ?
-                                                filled = false:
-                                                filled = true;*/
-
-                                                print("bool::::" + fill.toString());
-                                                filled = !filled;
-
-                                                if (filled == false) {
-                                                  CommentLikestatus = 0;
-                                                } else {
-                                                  CommentLikestatus = 1;
-                                                }
-                                                print("fill:" + CommentLikestatus.toString());
-                                               CommentLikeUnlike(PCommentList[index]['usercomment_id'], CommentLikestatus,videoId);
-                                              });
-                                            },
                                           ),
                                         ),
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Align(
-                                                alignment: Alignment.centerLeft,
-                                                child: Text(PCommentList[index]['user_name'])),
-                                            Text(
-                                                PCommentList[index]['videocomment'],style: TextStyle(fontSize: 12),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  '$index h',
-                                                  style: TextStyle(
-                                                      color: Colors.grey,
-                                                      fontSize: 10),
+                                        Container(
+                                          height: 45,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.6,
+                                          child: TextFormField(
+                                            focusNode: _focusNode,
+                                            controller: Comment,
+                                            decoration: InputDecoration(
+                                                enabledBorder:
+                                                    const OutlineInputBorder(
+                                                  // width: 0.0 produces a thin "hairline" border
+                                                  borderSide: const BorderSide(
+                                                      color: Colors.white,
+                                                      width: 0.0),
                                                 ),
-                                                SizedBox(
-                                                  width: 10,
+                                                contentPadding: EdgeInsets.only(
+                                                    top: 10, left: 10),
+                                                fillColor: Colors.white,
+                                                filled: true,
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                    15,
+                                                  ),
                                                 ),
-                                                InkWell(
-                                                    onTap: () {},
-                                                    child: Text(
-                                                      'Likes',
-                                                      style: TextStyle(
-                                                          color: Colors.grey,
-                                                          fontSize: 10),
-                                                    )),
-                                                SizedBox(
-                                                  width: 10,
+                                                hintText: 'Comment as $name',
+                                                hintStyle: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey)),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            if (Comment.text.isNotEmpty) {
+                                              if (_focusNode.hasFocus !=
+                                                  false) {
+                                                Navigator.pop(context);
+                                                print('view');
+                                                InserCommentReply(PCommentList[Index]['id']);
+                                                print('view'+PCommentList[Index]['id'].toString());
+                                              } else {
+                                                await HelperFunctions
+                                                    .saveuserVideoId(videoId);
+                                                VideoId = await HelperFunctions
+                                                    .getVedioID();
+                                                print('videoId' +
+                                                    videoId.toString());
+                                                CommentOnPost(videoId);
+                                                VideoCommentList(videoId);
+                                                Navigator.pop(context);
+                                              }
+                                            } else {
+                                              print('null');
+                                            }
+                                          },
+                                          child: Text(
+                                            'post',
+                                            style: TextStyle(
+                                                color: Colors.lightBlueAccent),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                    itemCount: PCommentList == null
+                                        ? 0
+                                        : PCommentList.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return Column(
+                                        children: [
+                                          InkWell(onLongPress: (){ _showMyDialog(context,PCommentList[index]['id']);
+                                          },
+                                            child: ListTile(
+                                                leading: InkWell(
+                                                  onTap: () {
+                                                    /*    Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ProfileInfo()));*/
+                                                  },
+                                                  child: ClipOval(
+                                                    child: loading != true
+                                                        ? Container(
+                                                            child: Center(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            ),
+                                                          )
+                                                        : Image.network(
+                                                            PCommentList[index][
+                                                                        'userphoto'] !=
+                                                                    null
+                                                                ? PCommentList[
+                                                                        index]
+                                                                    ['userphoto']
+                                                                : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745',
+                                                            width: 50,
+                                                            height: 50,
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                  ),
                                                 ),
-                                                InkWell(
-                                                    onTap: () {},
-                                                    child: Text(
-                                                      'Reply',
-                                                      style: TextStyle(
-                                                          color: Colors.grey,
-                                                          fontSize: 10),
-                                                    )),
-                                              ],
-                                            ),
-                                          ],
-                                        )),
-                                    Divider(
-                                      color: Colors.grey,
-                                      thickness: 1,
-                                    )
-                                  ],
-                                );
-                              }),
+                                                trailing: ButtonTheme(
+                                                  minWidth: 12,
+                                                  height: 14,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            18.0),
+                                                  ),
+                                                  child: IconButton(
+                                                    icon: PCommentList[index][
+                                                                    'status_comlike'] ==
+                                                                0 ||
+                                                            PCommentList[index][
+                                                                    'status_comlike'] ==
+                                                                null
+                                                        ? Icon(
+                                                            CupertinoIcons.heart,
+                                                            size: 18,
+                                                          )
+                                                        : Icon(
+                                                            CupertinoIcons
+                                                                .heart_solid,
+                                                            color: Colors.red,
+                                                            size: 18,
+                                                          ),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        if (PCommentList[index][
+                                                                    'status_like'] ==
+                                                                null ||
+                                                            PCommentList[index][
+                                                                    'status_like'] ==
+                                                                0) {
+                                                          filled == false;
+                                                        } else {
+                                                          filled == true;
+                                                        }
+
+                                                        filled = !filled;
+
+                                                        if (filled == false) {
+                                                          CommentLikestatus = 0;
+                                                        } else {
+                                                          CommentLikestatus = 1;
+                                                        }
+                                                        print("status:::::" +
+                                                            CommentLikestatus
+                                                                .toString());
+
+                                                      });
+                                                      CommentLikeUnlike(
+                                                          PCommentList[index]
+                                                              ['id'],
+                                                          CommentLikestatus,
+                                                          videoId);
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                ),
+                                                title: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Align(
+                                                        alignment:
+                                                            Alignment.centerLeft,
+                                                        child: Text(
+                                                            PCommentList[index]
+                                                                ['user_name'])),
+                                                    Text(
+                                                      PCommentList[index]
+                                                          ['videocomment'],
+                                                      style:
+                                                          TextStyle(fontSize: 12),
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          '$index h',
+                                                          style: TextStyle(
+                                                              color: Colors.grey,
+                                                              fontSize: 10),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        InkWell(
+                                                            onTap: () {},
+                                                            child: Text(
+                                                              'Likes',
+                                                              style: TextStyle(
+                                                                  color:
+                                                                      Colors.grey,
+                                                                  fontSize: 10),
+                                                            )),
+                                                        SizedBox(
+                                                          width: 10,
+                                                        ),
+                                                        TextButton(onPressed: (){
+                                                          setState(() { _focusNode.requestFocus();
+                                                          _focusNode.hasFocus == true;
+                                                          Index=index;
+                                                          print('Index' + Index.toString());
+                                                          });
+                                                        },
+                                                          child:Text('Reply',
+                                                            style: TextStyle(
+                                                                color:
+                                                                Colors.grey,
+                                                                fontSize: 10),
+                                                          )),
+                                                      ],
+                                                    ),
+                                                    InkWell(
+                                                      onTap: () {
+
+                                                        Fluttertoast.showToast(
+                                                            msg:
+                                                                "View All replies");
+                                                        setState((){
+                                                          GetReplyComments(PCommentList[index]['id']);
+                                                          alllreply();
+                                                        });
+
+                                                      },
+                                                      child: Align(
+                                                        alignment:
+                                                            Alignment.centerRight,
+                                                        child: Text(
+                                                          'View all replies',
+                                                          style: TextStyle(
+                                                              color: Colors.grey,
+                                                              fontSize: 12),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )),
+                                          ),
+                                          Divider(
+                                            color: Colors.grey,
+                                            thickness: 1,
+                                          )
+                                        ],
+                                      );
+                                    }),
+                              )
+                            ],
+                          ),
                         )
-                      ],
-                    ),
-                  ):Container(child: Center(child: CircularProgressIndicator(),),);
+                      : Container(
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
                 });
               });
+        });
+  }
+
+  Widget alllreply() {
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: getReplyComments == null ? 0 : getReplyComments.length,
+        itemBuilder: (BuildContext context, int index) {
+          return InkWell(
+            onLongPress: () =>
+                _showMyReplyDialog(context, getReplyComments[index]['id']),
+            child: Column(
+              children: [
+                ListTile(
+                    leading: InkWell(
+                      onTap: () {
+/*Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfileInfo()));*/
+                      },
+                      child: ClipOval(
+                        child: loading != true
+                            ? Container(
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                            : Image.network(
+                          getReplyComments[index]['userphoto'] != null
+                              ? getReplyComments[index]['userphoto']
+                              : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                              .toString(),
+                          width: 30,
+                          height: 30,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    /*  trailing: ButtonTheme(
+                      minWidth: 12,
+                      height: 14,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                      child: IconButton(
+                        icon: commentList[index]['status_like'] == null ||
+                            commentList[index]['status_like'] == 0
+                            ? Icon(
+                          CupertinoIcons.heart,
+                          size: 18,
+                        )
+                            : Icon(
+                          CupertinoIcons.heart_solid,
+                          color: Colors.red,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (commentList[index]['status_like'] == null ||
+                                commentList[index]['status_like'] == 0) {
+                              fill = false;
+                            } else {
+                              fill = true;
+                            }
+                            print("bool::::" + fill.toString());
+                            fill = !fill;
+
+                            if (fill == false) {
+                              status = 0;
+                            } else {
+                              status = 1;
+                            }
+                            print("status:::::" + status.toString());
+                            print(status);
+                            LikeUnlikeComments(
+                                commentList[index]['id'], status);
+                          });
+                        },
+                      ),
+                    ),*/
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(getReplyComments[index]['user_name'])),
+                        InkWell(
+                            child: Text(
+                              getReplyComments[index]['replycomment'],
+                              style: TextStyle(fontSize: 15),
+                            )),
+                        /*       Row(
+                          children: [
+                           */ /* Text(
+                              commentList[index]['created_at'],
+                              style:
+                              TextStyle(color: Colors.grey, fontSize: 10),
+                            ),*/ /*
+                            SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                                onTap: () {},
+                                child: Text(
+                                  'Likes',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 10),
+                                )),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                                onTap: () {
+                                  print('lol');
+                                  _focusNode.requestFocus();
+                                  setState(() {
+                                    _focusNode.hasFocus==true;
+                                  });
+
+                                },
+                                child: Text(
+                                  'Reply',
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 10),
+                                )),
+                          ],
+                        ),*/
+                        /*  InkWell(onTap: (){
+                         // alllreply();
+                        },
+                          child:  Align(alignment: Alignment.center,child:Text(
+                            'View all replies',
+                            style:
+                            TextStyle(color: Colors.grey, fontSize: 12),
+                          ),),
+                        ),*/
+                      ],
+                    )),
+              ],
+            ),
+          );
         });
   }
 }
