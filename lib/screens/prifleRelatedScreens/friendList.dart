@@ -22,7 +22,7 @@ class _FriendListScreenState extends State<FriendListScreen> {
   bool statusbool = false;
   Future FriendList() async {
     EasyLoading.show(status: 'Searching...');
-    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friends_list");
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friend_list");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
       "user_id": id1.toString(),
@@ -35,7 +35,7 @@ class _FriendListScreenState extends State<FriendListScreen> {
     var res = await json.decode(response.body);
     print("UploadPosts" + response.body);
     setState(() {
-      friendList = res['response_friendList'];
+      friendList = res['response_listFriends'];
       loading = true;
       /* suggestion = false;*/
     });
@@ -66,7 +66,6 @@ class _FriendListScreenState extends State<FriendListScreen> {
 
     var res = await json.decode(response.body);
     // print("UploadPosts1" + response.body);
-
 
     try {
       if (response.statusCode == 200) {
@@ -111,155 +110,164 @@ class _FriendListScreenState extends State<FriendListScreen> {
           itemBuilder: (BuildContext context, int index) {
             return Column(
               children: [
-                ListTile(
-                   leading: InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo(user_id: friendList[index]['friend_id'] ,)));
-                    },
-                      child: ClipOval(
-                        child: loading != true
-                            ? Container(
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        )
-                            : Image.network(
-                          friendList[index]['userphoto']
-                              .toString(),
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-
-                  title: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(friendList[index]['user_name'])),
-                          Row(
-                            children: [
-                              Text(
-                                'Id:  ',
-                                style: TextStyle(color: Colors.grey),
+                InkWell(onTap: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ProfileInfo(
+                            user_id: friendList[index]['user_id'],
+                          )));
+                },
+                  child: ListTile(
+                    leading: ClipOval(
+                      child: loading != true
+                          ? Container(
+                              child: Center(
+                                child: CircularProgressIndicator(),
                               ),
-                              Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    friendList[index]['user_code'].toString(),
-                                    style: TextStyle(color: Colors.grey),
-                                  )),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                                color: Colors.lightGreen,
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(color: Colors.lightGreen)),
-                            child: Text(
-                              'Lv 1',
-                              style:
-                                  TextStyle(fontSize: 10, color: Colors.white),
+                            )
+                          : Image.network(
+                              friendList[index]['userphoto'].toString(),
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
                             ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                                color: Colors.yellow.shade200,
-                                borderRadius: BorderRadius.circular(5),
-                                border:
-                                    Border.all(color: Colors.yellow.shade200)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    title: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(friendList[index]['user_name'])),
+                            Row(
                               children: [
-                                Icon(
-                                  CupertinoIcons.heart_solid,
-                                  color: Colors.red,
-                                  size: 10,
-                                ),
-                                SizedBox(
-                                  width: 5,
-                                ),
                                 Text(
-                                  '1',
-                                  style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold),
+                                  'Id:  ',
+                                  style: TextStyle(color: Colors.grey),
                                 ),
+                                Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      friendList[index]['user_code'].toString(),
+                                      style: TextStyle(color: Colors.grey),
+                                    )),
                               ],
                             ),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            'Last Online :265 days...',
-                            style: TextStyle(color: Colors.grey, fontSize: 13),
-                          )
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  color: Colors.lightGreen,
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(color: Colors.lightGreen)),
+                              child: Text(
+                                'Lv 1',
+                                style:
+                                    TextStyle(fontSize: 10, color: Colors.white),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                  color: Colors.yellow.shade200,
+                                  borderRadius: BorderRadius.circular(5),
+                                  border:
+                                      Border.all(color: Colors.yellow.shade200)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.heart_solid,
+                                    color: Colors.red,
+                                    size: 10,
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    '1',
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Last Online :265 days...',
+                              style: TextStyle(color: Colors.grey, fontSize: 13),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  /*  trailing: friendList[index]['status_friend'] == 0
+                        ? FlatButton(
+                            minWidth: 30,
+                            padding: EdgeInsets.all(5),
+                            height: 10,
+                            color: Colors.blue,
+                            onPressed: () {
+                              setState(() {
+                                if (friendList[index]['status_friend'] == 0) {
+                                  statusbool = false;
+                                } else {
+                                  statusbool = true;
+                                }
+                                statusbool = !statusbool;
+                                if (statusbool == false) {
+                                  status = 0;
+                                } else {
+                                  status = 1;
+                                }
+                              });
+                              print(status);
+                              AddFriendUnfriend(
+                                  friendList[index]['friend_id'], status);
+                              FriendList();
+                            },
+                            child: Text('Add Friend',
+                                style:
+                                    TextStyle(fontSize: 12, color: Colors.white)))
+                        : FlatButton(
+                            minWidth: 30,
+                            padding: EdgeInsets.all(5),
+                            height: 10,
+                            color: Colors.blue,
+                            onPressed: () {
+                              setState(() {
+                                if (friendList[index]['status_friend'] == 0) {
+                                  statusbool = false;
+                                } else {
+                                  statusbool = true;
+                                }
+                                statusbool = !statusbool;
+                                if (statusbool == false) {
+                                  status = 0;
+                                } else {
+                                  status = 1;
+                                }
+                              });
+                              print(status);
+                              AddFriendUnfriend(
+                                  friendList[index]['friend_id'], status);
+                              FriendList();
+                            },
+                            child: Text('Unfriend',
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.white))),*/
                   ),
-                  trailing: friendList[index]['status_friend'] == 0
-                      ? FlatButton(minWidth: 30,padding: EdgeInsets.all(5),height: 10,
-                          color: Colors.blue,
-                          onPressed: () {
-                            setState(() {
-                              if (friendList[index]['status_friend'] == 0) {
-                                statusbool = false;
-                              } else {
-                                statusbool = true;
-                              }
-                              statusbool = !statusbool;
-                              if (statusbool == false) {
-                                status = 0;
-                              } else {
-                                status = 1;
-                              }
-                            });
-                            print(status);
-                            AddFriendUnfriend(
-                                friendList[index]['friend_id'], status);
-                            FriendList();
-                          },
-                          child: Text('Add Friend',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.white)))
-                      : FlatButton(minWidth: 30,padding: EdgeInsets.all(5),height: 10,
-                          color: Colors.blue,
-                          onPressed: () {
-                            setState(() {
-                              if (friendList[index]['status_friend'] == 0) {
-                                statusbool = false;
-                              } else {
-                                statusbool = true;
-                              }
-                              statusbool = !statusbool;
-                              if (statusbool == false) {
-                                status = 0;
-                              } else {
-                                status = 1;
-                              }
-                            });
-                            print(status);
-                            AddFriendUnfriend(
-                                friendList[index]['friend_id'], status);
-                            FriendList();
-                          },
-                          child: Text('Unfriend',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.white))),
                 ),
                 Divider(
                   color: Colors.grey,

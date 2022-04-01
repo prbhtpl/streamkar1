@@ -29,6 +29,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
   String name = '';
   String vId = '';
   String region = '';
+  int followersCount = 0;
   int friendsCount = 0;
   int followingCount = 0;
   Future<void> _showMyDialog() async {
@@ -122,7 +123,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/following_count");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
-      "user_id": id1.toString(),
+      "user_id":  widget.user_id.toString(),
     };
 
     final response = await http.post(
@@ -144,12 +145,12 @@ class _ProfileInfoState extends State<ProfileInfo> {
       print(e);
     }
   }
-  Future GetFriendsCount() async {
+  Future GetFollowersCount() async {
     EasyLoading.show(status: 'Searching...');
-    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friends_count");
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/FollowersCount");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
-      "user_id": id1.toString(),
+      "user_id": widget.user_id.toString(),
     };
 
     final response = await http.post(
@@ -159,7 +160,34 @@ class _ProfileInfoState extends State<ProfileInfo> {
     var res = await json.decode(response.body);
     print("UploadPosts2" + response.body);
     setState(() {
-      friendsCount = res['response_friends_count'];
+      followersCount = res['response_FollowersCount'];
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future GetFriendsCount() async {
+    EasyLoading.show(status: 'Searching...');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friendListCount");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": widget.user_id.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("UploadPosts1" + response.body);
+    setState(() {
+      friendsCount = res['response_friendCount'];
     });
 
     try {
@@ -175,6 +203,8 @@ class _ProfileInfoState extends State<ProfileInfo> {
   void initState() {
     getUserDetails();
     GetFollowingCount();
+    GetFriendsCount();
+    GetFollowersCount();
     super.initState();
   }
   @override
@@ -300,7 +330,7 @@ class _ProfileInfoState extends State<ProfileInfo> {
                         padding: const EdgeInsets.only(
                             top: 8.0, right: 8.0, left: 8.0),
                         child: Text(
-                          '489',
+                          followersCount.toString(),
                           style: TextStyle(fontSize: 30),
                         ),
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:untitled/screens/prifleRelatedScreens/TopUpScreens/BuyBeansScreen.dart';
 
 class TopUpScreen extends StatefulWidget {
   const TopUpScreen({Key? key}) : super(key: key);
@@ -86,14 +87,16 @@ class _TopUpScreenState extends State<TopUpScreen> {
             ),
           ),
           Divider(thickness: 3,color: Colors.grey.shade300,),
-          InkWell(onTap: (){},
+          InkWell(onTap: (){
+Navigator.push(context, MaterialPageRoute(builder: (context)=>BuyBeans()));
+          },
             child: Padding(
               padding: const EdgeInsets.only(left: 10.0,right: 10,top: 5),
               child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,children: [
                 Row(children: [
                Image.asset('assets/googlePayIcon.jpg',scale: 12,),
                   SizedBox(width: 5,),
-                  Text('Google',
+                  Text('Top Up',
                   )],),
                 Row(children: [
                   Container(

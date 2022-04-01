@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
+import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -19,10 +19,7 @@ import 'package:http/http.dart' as http;
 
 import 'editProfilephoto2.dart';
 
-enum addType {
-  Male,
-  Female,
-}
+enum addType { Male, Female, Other }
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -35,7 +32,7 @@ class _EditProfileState extends State<EditProfile> {
   final formKey = GlobalKey<FormState>();
   final formKey1 = GlobalKey<FormState>();
   final formKey2 = GlobalKey<FormState>();
-  addType? _character =addType.Male;
+  addType? _character = addType.Male;
   String addtype = 'Male';
   File? imageFile;
   String? userId;
@@ -44,6 +41,7 @@ class _EditProfileState extends State<EditProfile> {
   TextEditingController Introduction = TextEditingController();
   TextEditingController Dob = TextEditingController();
   int? id;
+  bool visibility = false;
   String _name = "";
   String name = '';
   String vId = '';
@@ -52,7 +50,7 @@ class _EditProfileState extends State<EditProfile> {
   String dob = '';
   String introduction = '';
   String gender = '';
-
+  DateTime currentStartDate = DateTime.now();
   List profile = [];
   Future<void> _showMyDialog() async {
     return showDialog<void>(
@@ -127,68 +125,7 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  Future<void> _showEditNameDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Container(
-              // Specify some width
-              width: MediaQuery.of(context).size.width * .7,
-              child: Form(key: formKey,
-                child: TextFormField(validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Please enter your name";
-                  }
-                  return null;
-                },
-                  controller: EditedName,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(hintText: name.toString()),
-                ),
-              )),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 108.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                        primary: Colors.white, elevation: 0),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if(formKey.currentState!.validate()){
-                      Navigator.pop(context);
-                    }else{
-                      Fluttertoast.showToast(msg: 'This cannot be empty');
-                    }
 
-                  },
-                  child: Text(
-                    'Save',
-                    style: TextStyle(color: Colors.pink.shade300),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      primary: Colors.white, elevation: 0),
-                ),
-              ],
-            )
-          ],
-        );
-      },
-    );
-  }
 
   Widget RadioButtons() {
     return Row(
@@ -208,7 +145,7 @@ class _EditProfileState extends State<EditProfile> {
               },
             ),
             SizedBox(
-              width: 10,
+              width: 5,
             ),
             Text('Male'),
           ],
@@ -227,142 +164,35 @@ class _EditProfileState extends State<EditProfile> {
               },
             ),
             SizedBox(
-              width: 10,
+              width: 5,
             ),
             Text('Female'),
           ],
-        )
+        ),
+        Row(
+          children: [
+            Radio<addType>(
+              value: addType.Other,
+              groupValue: _character,
+              onChanged: (addType? value) {
+                setState(() {
+                  _character = value;
+                  addtype = addType.Other.name;
+                });
+                print(addtype);
+              },
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Text('Other'),
+          ],
+        ),
       ],
     );
   }
 
-  Future<void> _showTellUsDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Container(
-              // Specify some width
-              width: MediaQuery.of(context).size.width * .7,
-              child: Form(key: formKey2,
-                child: TextFormField(validator: (value) {
-                  if (value!.isEmpty  ) {
-                    return "Enter something about yourself.";
-                  }else{
 
-                  }
-
-                },
-                  controller: Introduction,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(hintText: 'Tell Us about yourself'),
-                ),
-              )),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 108.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                        primary: Colors.white, elevation: 0),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if(formKey2.currentState!.validate()){
-                      Navigator.pop(context);
-                    }else{
-                      Fluttertoast.showToast(msg: 'Enter Intro');
-                    }
-
-                  },
-                  child: Text(
-                    'Save',
-                    style: TextStyle(color: Colors.pink.shade300),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      primary: Colors.white, elevation: 0),
-                ),
-              ],
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _showDOBDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Container(
-              // Specify some width
-              width: MediaQuery.of(context).size.width * .7,
-              child: Form(key: formKey1,
-                child: TextFormField(  validator:  (value) {
-                  if (value!.isEmpty ) {
-                    return "Please enter Dob";
-                  }
-                  return null;
-                },
-                  controller: Dob,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(hintText: 'DD/MM/YY'),
-                ),
-              )),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 108.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                        primary: Colors.white, elevation: 0),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if(formKey1.currentState!.validate()){
-                      Navigator.pop(context);
-                    }else{
-                      Fluttertoast.showToast(msg: 'Required to Update');
-                    }
-                  },
-                  child: Text(
-                    'Save',
-                    style: TextStyle(color: Colors.pink.shade300),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                      primary: Colors.white, elevation: 0),
-                ),
-              ],
-            )
-          ],
-        );
-      },
-    );
-  }
 
   getallPreferences() async {
     var userDetails = await HelperFunctions.getVStarUniqueIdkey();
@@ -392,11 +222,12 @@ class _EditProfileState extends State<EditProfile> {
     setState(() {
       profile = res['response_getUserProfile'];
       print(profile);
-      if( profile[0]['userphoto']==null){
-        ImagelUrl= 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'.toString();
-      }else{ ImagelUrl = profile[0]['userphoto'].toString();
-
-
+      if (profile[0]['userphoto'] == null) {
+        ImagelUrl =
+            'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                .toString();
+      } else {
+        ImagelUrl = profile[0]['userphoto'].toString();
       }
       gender = profile[0]['gender'].toString();
       name = profile[0]['user_name'].toString();
@@ -417,50 +248,61 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-
   Future insertDataToProfile() async {
-   if(EditedName.text.isNotEmpty && Dob.text.isNotEmpty && Introduction.text.isNotEmpty){
-     EasyLoading.show(status: 'Updating...');
-
-     var api = Uri.parse("https://vinsta.ggggg.in.net/api/userProfile");
-
-     Map mapeddate = {
-       'user_id': id.toString(),
-       'user_name': EditedName.text,
-       'gender': addtype.toString(),
-       'dob': Dob.text,
-       'region': 'India',
-       'introduction': Introduction.text,
-     };
-
-     final response = await http.post(
-       api,
-       body: mapeddate,
-     );
-
-     var res = await json.decode(response.body);
-     print("hererere" + response.body);
+    EasyLoading.show(status: 'Updating...');
+    if (EditedName.text.isEmpty || Introduction.text.isEmpty) {
+      setState(() {
+        EditedName.text=name;
 
 
-     try {
-       if (response.statusCode == 200) {
-         EasyLoading.showSuccess("Updated");
-         EasyLoading.dismiss();
-         setState(() {
-           Navigator.pushReplacement(
-               context,
-               MaterialPageRoute(
-                   builder: (context) => BottomNavigation(
-                     screenId: 4,
-                   )));
-         });
-       }
-     } catch (e) {
-       print(e);
-     }
-   }else{
-     Fluttertoast.showToast(msg: 'Fill all fields first');
-   }
+        Introduction.text=introduction;
+      });
+    } else {
+      EditedName.text.toString();
+     /* Dob.text.toString();*/
+      Introduction.text.toString();
+    }
+    if(Dob.text.isEmpty){
+      Dob.text=dob.toString();
+    }
+    print(EditedName.text.toString());
+    print("dob"+Dob.text.toString());
+    print( Introduction.text.toString());
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/userProfile");
+
+    Map mapeddate = {
+      'user_id': id.toString(),
+      'user_name': EditedName.text,
+      'gender': addtype.toString(),
+      'dob': Dob.text.toString(),
+      'region': 'India',
+      'introduction': Introduction.text,
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere222" + response.body);
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.showSuccess("Updated");
+        EasyLoading.dismiss();
+        setState(() {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigation(
+                        screenId: 4,
+                      )));
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -468,9 +310,7 @@ class _EditProfileState extends State<EditProfile> {
     getUserDetails();
     getallPreferences();
     print(Constants.updatedName);
-    setState(() {
-
-    });
+    setState(() {});
     super.initState();
   }
 
@@ -479,6 +319,21 @@ class _EditProfileState extends State<EditProfile> {
     EditedName.dispose();
     Introduction.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectStartDate(BuildContext context) async {
+    final DateTime? pickedStartDate = await showDatePicker(
+        context: context,
+        initialDate: currentStartDate,
+        firstDate: DateTime(1980),
+        lastDate: DateTime(2090));
+    if (pickedStartDate != null && pickedStartDate != currentStartDate) {
+      setState(() {
+        currentStartDate = pickedStartDate;
+        Dob.text =
+            '${currentStartDate.day}/${currentStartDate.month}/${currentStartDate.year}'.toString();
+      });
+    }
   }
 
   @override
@@ -510,7 +365,7 @@ class _EditProfileState extends State<EditProfile> {
               ),
               onPressed: () {
                 insertDataToProfile();
-               // UpdateProfile();
+                // UpdateProfile();
               },
             )),
           )
@@ -529,23 +384,28 @@ class _EditProfileState extends State<EditProfile> {
               child: Center(
                   child: Column(
                 children: [
-                  Container(
-                    width: 125,
-                    height: 125,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(100),
-                      border: Border.all(color: Colors.blue, width: 1),
+                  InkWell(
+                    onTap: () {
+                      _showMyDialog();
+                    },
+                    child: Container(
+                      width: 125,
+                      height: 125,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: Colors.blue, width: 1),
+                      ),
+                      child: ClipOval(
+                          child: loading != true
+                              ? Center(
+                                  child: CircularProgressIndicator(),
+                                )
+                              : Image.network(
+                                  ImagelUrl.toString(),
+                                  fit: BoxFit.cover,
+                                )),
                     ),
-                    child: ClipOval(
-                        child: loading!=true
-                            ? Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : Image.network(
-                                ImagelUrl.toString(),
-                                fit: BoxFit.cover,
-                              )),
                   ),
                   SizedBox(
                     height: 10,
@@ -561,31 +421,32 @@ class _EditProfileState extends State<EditProfile> {
             SizedBox(
               height: 20,
             ),
-            InkWell(
-              onTap: () {
-                _showEditNameDialog();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Nickname',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                       name.toString(),
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    Icon(CupertinoIcons.right_chevron)
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Nickname',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Container(
+                          // Specify some width
+                          width: MediaQuery.of(context).size.width * .7,
+                          child: TextFormField(
+                            controller: EditedName,
+                            keyboardType: TextInputType.text,
+                            decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: name.toString()),
+                          )),
+                    ],
+                  ),
+                  Icon(CupertinoIcons.right_chevron)
+                ],
               ),
             ),
             Divider(
@@ -683,27 +544,39 @@ class _EditProfileState extends State<EditProfile> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                onTap: () {
-                  _showDOBDialog();
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Birthday: ',
-                          style: TextStyle(color: Colors.grey),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Birthday: ',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * .7,
+                        child: TextFormField(
+                          controller: Dob,
+                          onTap: () {
+                            FocusScope.of(context)
+                                .requestFocus(new FocusNode());
+                            _selectStartDate(context);
+
+                          },
+                          decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: dob.toString()),
                         ),
-                        Text(
-                          dob.toString(),
+                      )
+                      /*Visibility(visible: visibility,
+                        child: Text(
+                           '${currentStartDate.day}/${currentStartDate.month}/${currentStartDate.year}',
                         ),
-                      ],
-                    ),
-                    Icon(CupertinoIcons.right_chevron)
-                  ],
-                ),
+                      ),*/
+                    ],
+                  ),
+                  Icon(CupertinoIcons.right_chevron)
+                ],
               ),
             ),
             Divider(
@@ -713,29 +586,30 @@ class _EditProfileState extends State<EditProfile> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: InkWell(
-                onTap: () {
-                  _showTellUsDialog();
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          'Introduction',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Container(
-                          child: Text(
-                            introduction.toString(),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Icon(CupertinoIcons.right_chevron)
-                  ],
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        'Introduction',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+              Container(
+                // Specify some width
+                  width: MediaQuery.of(context).size.width * .7,
+                  child: TextFormField(
+
+                    maxLines: 2,
+                    controller: Introduction,
+                    keyboardType: TextInputType.text,
+                    decoration:
+                    InputDecoration(border: InputBorder.none,hintText: introduction.toString()),
+                  )),
+                    ],
+                  ),
+                  Icon(CupertinoIcons.right_chevron)
+                ],
               ),
             ),
             Divider(

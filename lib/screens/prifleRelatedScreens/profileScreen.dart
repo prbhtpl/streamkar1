@@ -9,10 +9,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:untitled/helper/helperFunctions.dart';
 import 'package:untitled/screens/prifleRelatedScreens/Earnings/officialTalentScreen.dart';
+import 'package:untitled/screens/prifleRelatedScreens/buyGemsRelatedScreens/buyGemsScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/editphotoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/profileInfoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/settingPage.dart';
-import 'package:untitled/screens/prifleRelatedScreens/topUpScreen.dart';
+import 'package:untitled/screens/prifleRelatedScreens/TopUpScreens/topUpScreen.dart';
 import '../homeScreenRelatedScreens/Post RelatedPages/comentPage.dart';
 import 'YourPost/currentUserPost.dart';
 import 'followersList.dart';
@@ -38,6 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool loading = false;
   int followingCount = 0;
   int friendsCount = 0;
+  int followersCount = 0;
   int? id;
   String _name = '';
 
@@ -83,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future GetFriendsCount() async {
     EasyLoading.show(status: 'Searching...');
-    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friends_count");
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friendListCount");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
       "user_id": id1.toString(),
@@ -96,7 +98,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var res = await json.decode(response.body);
     print("UploadPosts2" + response.body);
     setState(() {
-      friendsCount = res['response_friends_count'];
+      friendsCount = res['response_friendCount'];
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  Future GetFollowersCount() async {
+    EasyLoading.show(status: 'Searching...');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/FollowersCount");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": id1.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("UploadPosts2" + response.body);
+    setState(() {
+      followersCount = res['response_FollowersCount'];
     });
 
     try {
@@ -275,6 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     getPostPics();
     getallPreferences();
     GetFollowingCount();
+    GetFollowersCount();
     GetFriendsCount();
     getUserDetails();
     super.initState();
@@ -293,40 +323,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5, left: 80.0),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          'assets/nuts.png',
-                          scale: 6.5,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          '0',
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ],
+                  InkWell(onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>TopUpScreen()));
+                  },
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 5, left: 80.0),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'assets/nuts.png',
+                            scale: 6.5,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            '0',
+                            style: TextStyle(fontSize: 18),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, right: 80.0),
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          'assets/diamond.png',
-                          scale: 8,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          '0',
-                          style: TextStyle(fontSize: 18),
-                        )
-                      ],
+                  InkWell(onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>BuyDiamond()));
+                  },
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10, right: 80.0),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            'assets/diamond.png',
+                            scale: 8,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            '0',
+                            style: TextStyle(fontSize: 18),
+                          )
+                        ],
+                      ),
                     ),
                   )
                 ],
@@ -375,7 +413,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.only(
                               top: 8.0, right: 8.0, left: 8.0),
                           child: Text(
-                            '489',
+                            followersCount.toString(),
                             style: TextStyle(fontSize: 30),
                           ),
                         ),
@@ -491,7 +529,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   InkWell(onTap: (){
                                     Navigator.push(context, MaterialPageRoute(builder: (context)=>OfficialTalent()));
-                                  },child:Container(height:30,width: 80, child: Text('earings'))),
+                                  },child:Container(height:30,width: 80, child: Text('Earings'))),
                                 ],
                               ),
                             ],

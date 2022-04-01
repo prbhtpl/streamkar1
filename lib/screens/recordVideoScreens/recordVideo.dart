@@ -353,18 +353,18 @@ class _RecordVideoState extends State<RecordVideo>
                             MaterialPageRoute(
                                 builder: (context) => addSongs()));
                       }),
-                  IconButton(
+                /*  IconButton(
                     icon: const Icon(Icons.flash_on),
                     color: Colors.white,
                     onPressed:
                         controller != null ? onFlashModeButtonPressed : null,
-                  ),
+                  ),*/
                 ],
               ),
               // The exposure and focus mode are currently not supported on the web.
               ...!kIsWeb
                   ? <Widget>[
-                      IconButton(
+                     /* IconButton(
                         icon: const Icon(Icons.exposure),
                         color: Colors.white,
                         onPressed: controller != null
@@ -377,7 +377,7 @@ class _RecordVideoState extends State<RecordVideo>
                         onPressed: controller != null
                             ? onFocusModeButtonPressed
                             : null,
-                      )
+                      )*/
                     ]
                   : <Widget>[],
               IconButton(
@@ -397,7 +397,7 @@ class _RecordVideoState extends State<RecordVideo>
                       color: Colors.white,
                     ),
                   ),
-                  IconButton(
+                /*  IconButton(
                     icon: Icon(
                         controller?.value.isCaptureOrientationLocked ?? false
                             ? Icons.screen_lock_rotation
@@ -406,7 +406,7 @@ class _RecordVideoState extends State<RecordVideo>
                     onPressed: controller != null
                         ? onCaptureOrientationLockButtonPressed
                         : null,
-                  ),
+                  ),*/
                 ],
               ),
             ],
@@ -690,7 +690,7 @@ class _RecordVideoState extends State<RecordVideo>
             onPressed: _onSwitchCamera,
           ),
         ),
-        Padding(
+       /* Padding(
           padding: const EdgeInsets.only(top: 30.0, left: 20),
           child: IconButton(
             icon: const Icon(
@@ -705,7 +705,7 @@ class _RecordVideoState extends State<RecordVideo>
               });
             },
           ),
-        ),
+        ),*/
         InkWell(
           /*onLongPress: (){  startTimer();
         onVideoRecordButtonPressed();},*/
@@ -722,57 +722,59 @@ class _RecordVideoState extends State<RecordVideo>
               }
             });
           },
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 50.0),
-                child: buildTimer(),
-              ),
-              Container(
-                height: 80,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10, right: 50),
-                  child: Center(
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5, left: 5),
-                          child: SizedBox(
-                              width: 65,
-                              height: 150,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 6,
-                                value: 1 - seconds / maxSeconds,
-                                color: Colors.green,
-                                backgroundColor: Colors.white,
-                              )),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.circle,
-                            size: 60,
+          child: Padding(padding: EdgeInsets.only(left: 30),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 50.0),
+                  child: buildTimer(),
+                ),
+                Container(
+                  height: 80,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10, right: 50),
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5, left: 5),
+                            child: SizedBox(
+                                width: 65,
+                                height: 150,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 6,
+                                  value: 1 - seconds / maxSeconds,
+                                  color: Colors.green,
+                                  backgroundColor: Colors.white,
+                                )),
                           ),
-                          color: Colors.red,
-                          onPressed: () {
-                            setState(() {
-                              clicked = !clicked;
-                              print('clicked' + clicked.toString());
-                              if (clicked != false) {
-                                startTimer();
-                                onVideoRecordButtonPressed();
-                              } else {
-                                stopTimer(reset: true);
-                                onStopButtonPressed();
-                              }
-                            });
-                          },
-                        ),
-                      ],
+                          IconButton(
+                            icon: const Icon(
+                              Icons.circle,
+                              size: 60,
+                            ),
+                            color: Colors.red,
+                            onPressed: () {
+                              setState(() {
+                                clicked = !clicked;
+                                print('clicked' + clicked.toString());
+                                if (clicked != false) {
+                                  startTimer();
+                                  onVideoRecordButtonPressed();
+                                } else {
+                                  stopTimer(reset: true);
+                                  onStopButtonPressed();
+                                }
+                              });
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         Padding(

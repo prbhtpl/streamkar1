@@ -7,10 +7,9 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:untitled/helper/helperFunctions.dart';
 import 'package:untitled/screens/regiterScreen.dart';
-
 import 'package:video_player/video_player.dart';
-
 import '../bottomNavigationBar/bottomNavigation.dart';
+import '../helper/storeSecureStorage.dart';
 import '../myhomePage.dart';
 import '../services/auth.dart';
 import '../services/database.dart';
@@ -114,6 +113,7 @@ class _LogginScreenState extends State<LogginScreen> {
             setState(() {
               loading = true;
             });
+
             await authMethods
                 .signInWithEmailAndPassword(email.text, password.text)
                 .then((value) async {
@@ -167,7 +167,14 @@ class _LogginScreenState extends State<LogginScreen> {
       }
     }
   }
-
+Future init()async{
+    final username=await UserSecureStorage.getUsername()??'';
+    final password=await UserSecureStorage.getPassword()??'';
+    setState(() {
+      this.email.text=username;
+      this.password.text=password;
+    });
+}
   @override
   void initState() {
     super.initState();
@@ -178,6 +185,8 @@ class _LogginScreenState extends State<LogginScreen> {
         // Ensure the first frame is shown after the video is initialized
         setState(() {});
       });
+    init();
+
   }
 
   @override
@@ -306,17 +315,30 @@ class _LogginScreenState extends State<LogginScreen> {
                                               color: Colors.teal,
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        onPressed: () {
+                                        onPressed: () async{
+                                          await UserSecureStorage.setUserName(email.text);
+                                          await UserSecureStorage.setPassword(password.text);
                                           //  signIn();
                                           loginMethod();
                                         },
                                       ),
                                     ),
+
                                   ],
                                 ),
                               ),
                             ),
                           ),
+                        ), SizedBox(
+                          height: 5,
+                        ),
+                        InkWell(onTap: (){
+
+                        },
+                          child: Text('Forget Paassword?', style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold)),
                         ),
                         SizedBox(
                           height: 15,

@@ -107,11 +107,11 @@ class _FollowingScreenState extends State<FollowingScreen> {
           itemBuilder: (BuildContext context, int index) {
             return Column(
               children: [
-                ListTile(
-                    leading: InkWell(onTap: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo(user_id: followingList[index]['following_id'] ,)));
-                    },
-                      child: ClipOval(
+                InkWell(onTap: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo(user_id: followingList[index]['following_id'] ,)));
+                },
+                  child: ListTile(
+                      leading: ClipOval(
                         child: loading != true
                             ? Container(
                           child: Center(
@@ -126,104 +126,104 @@ class _FollowingScreenState extends State<FollowingScreen> {
                           fit: BoxFit.cover,
                         ),
                       ),
-                    ),
-                    trailing: followingList[index]['status'] == 0
-                        ? FlatButton(minWidth: 30,padding: EdgeInsets.all(5),height: 10,
-                        color: Colors.blue,
-                        onPressed: () {
-                          setState(() {
-                            if (followingList[index]['status_friend'] == 0) {
-                              statusbool = false;
-                            } else {
-                              statusbool = true;
-                            }
-                            statusbool = !statusbool;
-                            if (statusbool == false) {
-                              status = 0;
-                            } else {
-                              status = 1;
-                            }
-                          });
-                          print(status);
-                          FollowUnfollow(
-                              followingList[index]['following_id'], status);
-                          GetFollowingList();
-                        },
-                        child: Text('Add Friend',
-                            style:
-                            TextStyle(fontSize: 12, color: Colors.white)))
-                        : FlatButton(minWidth: 30,padding: EdgeInsets.all(5),height: 10,
-                        color: Colors.blue,
-                        onPressed: () {
-                          setState(() {
-                            if (followingList[index]['status'] == 0) {
-                              statusbool = false;
-                            } else {
-                              statusbool = true;
-                            }
-                            statusbool = !statusbool;
-                            if (statusbool == false) {
-                              status = 0;
-                            } else {
-                              status = 1;
-                            }
-                          });
-                          print(status);
-                         FollowUnfollow(
-                              followingList[index]['following_id'], status);
-                          GetFollowingList();
-                        },
-                        child: Text('Unfollow',
-                            style: TextStyle(
-                                fontSize: 12, color: Colors.white))),
-                    title:Column(
-                      children: [
-                        Align(alignment: Alignment.centerLeft,child: Text( followingList[index]['user_name'])),
-                        Row(
+                    /*  trailing: followingList[index]['status'] == 0
+                          ? FlatButton(minWidth: 30,padding: EdgeInsets.all(5),height: 10,
+                          color: Colors.blue,
+                          onPressed: () {
+                            setState(() {
+                              if (followingList[index]['status_friend'] == 0) {
+                                statusbool = false;
+                              } else {
+                                statusbool = true;
+                              }
+                              statusbool = !statusbool;
+                              if (statusbool == false) {
+                                status = 0;
+                              } else {
+                                status = 1;
+                              }
+                            });
+                            print(status);
+                            FollowUnfollow(
+                                followingList[index]['following_id'], status);
+                            GetFollowingList();
+                          },
+                          child: Text('Add Friend',
+                              style:
+                              TextStyle(fontSize: 12, color: Colors.white)))
+                          : FlatButton(minWidth: 30,padding: EdgeInsets.all(5),height: 10,
+                          color: Colors.blue,
+                          onPressed: () {
+                            setState(() {
+                              if (followingList[index]['status'] == 0) {
+                                statusbool = false;
+                              } else {
+                                statusbool = true;
+                              }
+                              statusbool = !statusbool;
+                              if (statusbool == false) {
+                                status = 0;
+                              } else {
+                                status = 1;
+                              }
+                            });
+                            print(status);
+                           FollowUnfollow(
+                                followingList[index]['following_id'], status);
+                            GetFollowingList();
+                          },
+                          child: Text('Unfollow',
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.white))),*/
+                      title:Column(
+                        children: [
+                          Align(alignment: Alignment.centerLeft,child: Text( followingList[index]['user_name'])),
+                          Row(
 
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                  color: Colors.lightGreen,
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(color: Colors.lightGreen)),
-                              child: Text(
-                                'Lv 1',
-                                style: TextStyle(fontSize: 10, color: Colors.white),
-                              ),
-                            ),SizedBox(width: 5,),
-                            Container(
-                              padding: EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                  color: Colors.yellow.shade200,
-                                  borderRadius: BorderRadius.circular(5),
-                                  border:
-                                  Border.all(color: Colors.yellow.shade200)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.heart_solid,
-                                    color: Colors.red,
-                                    size: 10,
-                                  ),
-                                  SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    '1',
-                                    style: TextStyle(
-                                        fontSize: 10, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),SizedBox(width: 5,),
-                            Text('Last Online :265 days...',style: TextStyle(color: Colors.grey,fontSize: 13),)
-                          ],
-                        ),
-                      ],
-                    )
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                    color: Colors.lightGreen,
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: Colors.lightGreen)),
+                                child: Text(
+                                  'Lv 1',
+                                  style: TextStyle(fontSize: 10, color: Colors.white),
+                                ),
+                              ),SizedBox(width: 5,),
+                              Container(
+                                padding: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                    color: Colors.yellow.shade200,
+                                    borderRadius: BorderRadius.circular(5),
+                                    border:
+                                    Border.all(color: Colors.yellow.shade200)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Icon(
+                                      CupertinoIcons.heart_solid,
+                                      color: Colors.red,
+                                      size: 10,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '1',
+                                      style: TextStyle(
+                                          fontSize: 10, fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              ),SizedBox(width: 5,),
+                              Text('Last Online :265 days...',style: TextStyle(color: Colors.grey,fontSize: 13),)
+                            ],
+                          ),
+                        ],
+                      )
+                  ),
                 ),
                 Divider(color: Colors.grey,thickness: 1,),
 

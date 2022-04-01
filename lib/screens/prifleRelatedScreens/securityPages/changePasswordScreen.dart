@@ -1,8 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:untitled/bottomNavigationBar/bottomNavigation.dart';
+import 'package:http/http.dart' as http;
+
+import '../../../helper/helperFunctions.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
@@ -12,6 +19,50 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
+  TextEditingController CurrentPassword = TextEditingController();
+  TextEditingController NewPassword = TextEditingController();
+  TextEditingController RetypePassword = TextEditingController();
+  Future UpdatePassword() async {
+    EasyLoading.show(status: 'Loading...');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/changepassword");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "id": id1.toString(),
+      "oldpassword": CurrentPassword.text,
+      "password": NewPassword.text,
+      "confirm_password": RetypePassword.text
+    };
+
+    final response = await http.post(api, body: mapeddate);
+
+    var res = await json.decode(response.body);
+    print("UploadPosts1" + response.body);
+    setState(() {
+
+      CurrentPassword.clear();
+       NewPassword.clear();
+       RetypePassword.clear();
+
+    });
+
+    try {
+      if (response.statusCode == 200 &&
+          res['status_message'] == "Change Password Successful") {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(screenId: 0)));
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      } else {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: res['response_changepassword'].toString());
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +102,8 @@ class _ChangePasswordState extends State<ChangePassword> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.grey)),
-                child: TextField(
+                child: TextFormField(
+                  controller: CurrentPassword,
                   decoration: InputDecoration(
                     prefixIcon: Icon(FontAwesomeIcons.shieldAlt),
                     border: InputBorder.none,
@@ -70,11 +122,12 @@ class _ChangePasswordState extends State<ChangePassword> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.grey)),
-                child: TextField(
+                child: TextFormField(
+                  controller: NewPassword,
                   decoration: InputDecoration(
                     prefixIcon: Icon(FontAwesomeIcons.key),
                     border: InputBorder.none,
-                    hintText: "New Password",
+                    hintText: "Password",
                   ),
                   obscureText: true,
                 ),
@@ -89,11 +142,12 @@ class _ChangePasswordState extends State<ChangePassword> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.grey)),
-                child: TextField(
+                child: TextFormField(
+                  controller: RetypePassword,
                   decoration: InputDecoration(
                     prefixIcon: Icon(FontAwesomeIcons.key),
                     border: InputBorder.none,
-                    hintText: "Retype new Password",
+                    hintText: "Confirm Password",
                   ),
                   obscureText: true,
                 ),
@@ -101,10 +155,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             ),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => BottomNavigation(screenId: 0)));
+                UpdatePassword();
                 },
                 child: Text(
                   'Update Password',
@@ -122,14 +173,6 @@ class _ChangePasswordState extends State<ChangePassword> {
             SizedBox(
               height: 10,
             ),
-            Center(
-                child: InkWell(
-              onTap: () {},
-              child: Text(
-                'Forget Password?',
-                style: TextStyle(color: Colors.blue),
-              ),
-            ))
           ],
         ),
       ),

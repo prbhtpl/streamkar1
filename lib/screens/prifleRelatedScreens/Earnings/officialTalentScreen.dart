@@ -1,7 +1,12 @@
 
 
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+import 'applytoBeandOfficialTalent.dart';
 class OfficialTalent extends StatefulWidget {
   const OfficialTalent({Key? key}) : super(key: key);
 
@@ -10,6 +15,9 @@ class OfficialTalent extends StatefulWidget {
 }
 
 class _OfficialTalentState extends State<OfficialTalent> {
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +34,9 @@ class _OfficialTalentState extends State<OfficialTalent> {
               padding: const EdgeInsets.all(18.0),
               child: ElevatedButton(onPressed: (){}, child: Text('Cannot Apply'),style: ElevatedButton.styleFrom(primary: Colors.pinkAccent),),
             ),
-            InkWell(onTap: (){},child: Align(alignment: Alignment.center,child:Text('I have an agency ID',style: TextStyle(color: Colors.grey),),)),
+            InkWell(onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>ApplyToBeAnOfficialTalent()));
+            },child: Align(alignment: Alignment.center,child:Text('I have an agency ID',),)),
           ],),
         )
       ],

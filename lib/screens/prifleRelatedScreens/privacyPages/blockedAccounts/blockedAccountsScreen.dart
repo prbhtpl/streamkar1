@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:untitled/screens/prifleRelatedScreens/privacyPages/blockedAccounts/addUsersToBlockList.dart';
+import 'package:http/http.dart' as http;
+import '../../../../helper/helperFunctions.dart';
 import '../../profileInfoScreen.dart';
 class BlockAccountScreen extends StatefulWidget {
   const BlockAccountScreen({Key? key}) : super(key: key);
@@ -10,6 +16,75 @@ class BlockAccountScreen extends StatefulWidget {
 }
 
 class _BlockAccountScreenState extends State<BlockAccountScreen> {
+  bool loading = false;
+  List AllBlockUsersList = [];
+  Future UsersList() async {
+    EasyLoading.show(status: 'Searching...');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/blockedList");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id": id1.toString(),
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("UploadPosts" + response.body);
+    setState(() {
+      AllBlockUsersList = res['response_blockList'];
+      loading = true;
+      /* suggestion = false;*/
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future PostBlock(int followingId) async {
+    EasyLoading.show(status: 'Searching...');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/blockUnblock");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "following_id": followingId.toString(),
+      "user_id": id1.toString(),
+      "status_block": 0.toString()
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("UploadPosts111" + response.body);
+
+    try {
+      if (response.statusCode == 200) {
+        setState(() {
+
+         /* UsersList();*/
+        });
+
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+@override
+  void initState() {
+  UsersList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,114 +100,144 @@ class _BlockAccountScreenState extends State<BlockAccountScreen> {
               CupertinoIcons.left_chevron,
               color: Colors.black,
             )),
-        actions: [IconButton(onPressed: (){}, icon: Icon(CupertinoIcons.add,color: Colors.black,))],
+        actions: [IconButton(onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>AddUsersToBlockList()));}, icon: Icon(CupertinoIcons.add,color: Colors.black,))],
         title: Text(
-          'Activity Status',
+          'Blocked Accounts',
           style: TextStyle(color: Colors.black),
         ),
         toolbarHeight: 50,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                    itemCount: 5,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Column(
+      body: ListView.builder(
+          itemCount: AllBlockUsersList == null ? 0 : AllBlockUsersList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Column(
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                ListTile(
+                  trailing: AllBlockUsersList[index]['status_block'] == 0
+                      ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.blue),
+                    onPressed: () {
+                    /*  PostBlock(AllBlockUsersList[index]['user_id']);*/
+                    },
+                    child: Text(
+                      'Block',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  )
+                      : ElevatedButton(
+                    style:
+                    ElevatedButton.styleFrom(primary: Colors.white),
+                    onPressed: () {
+                      PostBlock(AllBlockUsersList[index]['user_id']);
+                    },
+                    child: Text(
+                      'Unblock',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
+                  leading: ClipOval(
+                    child: loading != true
+                        ? Container(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                        : Image.network(
+                      AllBlockUsersList[index]['userphoto'].toString(),
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  title: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ListTile(trailing: ElevatedButton(style: ElevatedButton.styleFrom(
-                            primary: Colors.white
-                          ),onPressed: (){},child: Text('Unblock',style: TextStyle(color: Colors.black),),),
-                              leading: InkWell(onTap: (){
-                              /*  Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileInfo()));*/
-                              },
-                                child: Stack(
-                                    children:[
-                                      CircleAvatar(
-                                          child: Image.asset('assets/person.jpg')
-                                      ),
-                                      Container(
-                                        width: 10,
-                                        height: 10,
-                                        decoration: BoxDecoration(
-                                          color: Colors.purple,
-                                          borderRadius: BorderRadius.circular(100),
-                                          border: Border.all(color: Colors.white),
-                                        ),
-                                        child: Icon( CupertinoIcons.person_alt_circle,
-                                          color: Colors.white,size: 8,),
-
-                                      ),
-                                    ]
-                                ),
+                          Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(AllBlockUsersList[index]['user_name'])),
+                          Row(
+                            children: [
+                              Text(
+                                'Id:  ',
+                                style: TextStyle(color: Colors.grey),
                               ),
-
-                              title:Column(
-                                children: [
-                                  Align(alignment: Alignment.centerLeft,child: Text("Emil 554")),
-                                  Row(
-
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                            color: Colors.lightGreen,
-                                            borderRadius: BorderRadius.circular(5),
-                                            border: Border.all(color: Colors.lightGreen)),
-                                        child: Text(
-                                          'Lv 1',
-                                          style: TextStyle(fontSize: 10, color: Colors.white),
-                                        ),
-                                      ),SizedBox(width: 5,),
-                                      Container(
-                                        padding: EdgeInsets.all(4),
-                                        decoration: BoxDecoration(
-                                            color: Colors.yellow.shade200,
-                                            borderRadius: BorderRadius.circular(5),
-                                            border:
-                                            Border.all(color: Colors.yellow.shade200)),
-                                        child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Icon(
-                                              CupertinoIcons.heart_solid,
-                                              color: Colors.red,
-                                              size: 10,
-                                            ),
-                                            SizedBox(
-                                              width: 5,
-                                            ),
-                                            Text(
-                                              '1',
-                                              style: TextStyle(
-                                                  fontSize: 10, fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                      ),SizedBox(width: 5,),
-                                      Text('Last Online :265 days...',style: TextStyle(color: Colors.grey,fontSize: 13),)
-                                    ],
-                                  ),
-                                ],
-                              ),
-
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    AllBlockUsersList[index]['user_code'].toString(),
+                                    style: TextStyle(color: Colors.grey),
+                                  )),
+                            ],
                           ),
-                          Divider(color: Colors.grey,thickness: 1,)
                         ],
-                      );
-
-                    }),
-              ),
-              Text('You may want to block'),
-              Text('Based on your account Center',style: TextStyle(color: Colors.grey),),
-            ],
-          ),
-        ),
-      ),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                                color: Colors.lightGreen,
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: Colors.lightGreen)),
+                            child: Text(
+                              'Lv 1',
+                              style:
+                              TextStyle(fontSize: 10, color: Colors.white),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                                color: Colors.yellow.shade200,
+                                borderRadius: BorderRadius.circular(5),
+                                border:
+                                Border.all(color: Colors.yellow.shade200)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.heart_solid,
+                                  color: Colors.red,
+                                  size: 10,
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  '1',
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Divider(
+                  color: Colors.grey,
+                  thickness: 1,
+                )
+              ],
+            );
+          }),
     );
   }
 }

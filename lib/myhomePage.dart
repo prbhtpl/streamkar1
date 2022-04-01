@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:untitled/screens/homeScreenRelatedScreens/Post%20RelatedPages/comentPage.dart';
 import 'package:untitled/screens/homeScreenRelatedScreens/Post%20RelatedPages/userLikePostScreen.dart';
 import 'package:untitled/screens/homeScreenRelatedScreens/notificationScreen.dart';
@@ -17,7 +21,7 @@ import 'package:untitled/screens/prifleRelatedScreens/profileInfoScreen.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:documents_picker/documents_picker.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:device_info/device_info.dart';
 import 'helper/helperFunctions.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -68,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Fresher',
-                                      style: TextStyle(
+                                      style: TextStyle(color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -78,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Popular',
-                                      style: TextStyle(
+                                      style: TextStyle(color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -88,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Nearby',
-                                      style: TextStyle(
+                                      style: TextStyle(color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -98,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Following',
-                                      style: TextStyle(
+                                      style: TextStyle(color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -108,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Suggestion',
-                                      style: TextStyle(
+                                      style: TextStyle(color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -153,10 +157,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             dragStartBehavior: DragStartBehavior.start,
                             children: [
                               FresherTabView(),
-                              Text('2'),
-                              Text('3'),
-                              Text('4'),
-                              Text('5'),
+                              PopularTabView(),
+                              NearbyView(),
+                              FollowingView(),
+                              Suggestion(),
                             ]),
                       ),
                     ],
@@ -181,45 +185,57 @@ class BannerSlider extends StatefulWidget {
 }
 
 class _BannerSliderState extends State<BannerSlider> {
+  bool bannerloading=false;
   String image = '';
+  List Banner=[];
+  Future getAllBanner() async {
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/bannerget");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
 
+
+    final response = await http.get(
+      api,
+
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+Banner=res['response_bannerlist'];
+bannerloading=true;
+    });
+
+    try {
+      if (response.statusCode == 200) {
+
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  @override
+  void initState() {
+    getAllBanner();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return CarouselSlider(
       items: [
-        Container(
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset('assets/043.jpg', fit: BoxFit.fitWidth),
-          ),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset('assets/3.jpg', fit: BoxFit.fitWidth),
-          ),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset(
-              'assets/4.jpg',
-              fit: BoxFit.fitWidth,
+        for (var i = 0; i < Banner.length; i++)
+          bannerloading?Container(
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
             ),
-          ),
-        ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child: Image.network(Banner[i]['banner_img'].toString(), fit: BoxFit.fitWidth),
+            ),
+          ):Container(child: Center(child: CircularProgressIndicator(color: Colors.pinkAccent,),),)
+
+
+
       ],
       options: CarouselOptions(
         enlargeCenterPage: true,
@@ -241,13 +257,14 @@ class FresherTabView extends StatefulWidget {
 }
 
 class _FresherTabViewState extends State<FresherTabView> {
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   TextEditingController postText = TextEditingController();
   String ImagelUrl = '';
   List profile = [];
   bool loading = false;
   bool UserImageloading = false;
   List allFollowersposts = [];
-  List allFriendsposts = [];
+  String locality='';
   List likes = [];
   List getLikeUnlike = [];
   int status = 0;
@@ -263,8 +280,8 @@ String recentlikeaPerson='';
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
       "user_id": id1.toString(),
-      "following_id": following_id.toString(),
-      "friend_id": friend_id.toString(),
+      /*"following_id": following_id.toString(),
+      "friend_id": friend_id.toString(),*/
       "postImage_id": postImage_id.toString(),
       "comment": postText.text.toString()
     };
@@ -341,6 +358,7 @@ String recentlikeaPerson='';
   }
 
   Future getUserDetails() async {
+
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/profileGet");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {"user_id": id1.toString()};
@@ -376,7 +394,7 @@ String recentlikeaPerson='';
     }
   }
 
-  Future GetLikeDislikeStatus() async {
+  /*Future GetLikeDislikeStatus() async {
     EasyLoading.show(status: 'Updating');
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/likeOnimage");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
@@ -393,7 +411,8 @@ String recentlikeaPerson='';
     print("UploadPosts3" + response.body);
     setState(() {
       getLikeUnlike = res['response_imagelikes'];
-      /* loading = true;*/
+      */
+  /* loading = true;*//*
     });
 
     try {
@@ -404,6 +423,45 @@ String recentlikeaPerson='';
     } catch (e) {
       print(e);
     }
+  }*/
+  Future<Position> _getGeoLocationPosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      return Future.error('Location services are disabled.');
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+  Future<void> GetAddressFromLatLong() async {
+    Position position = await _getGeoLocationPosition();
+    List<Placemark> placemarks =
+    await placemarkFromCoordinates(position.latitude, position.longitude);
+    // print(placemarks);
+    Placemark place = placemarks[0];
+
+    setState(() {
+      locality =
+      ' ${place.subLocality} ${place.subAdministrativeArea}';
+      LoginActivity();
+    });
+    print( ' ${place.locality} ${place.subLocality}');
   }
 
   Future GetFollowingAllPost() async {
@@ -434,6 +492,42 @@ String recentlikeaPerson='';
       print(e);
     }
   }
+  Future LoginActivity() async {
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  print(   "address"+locality.toString());
+  print(   "device_name"+androidInfo.model.toString());
+
+    EasyLoading.show(status: 'Updating');
+
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/loginActivityPost");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {
+      "user_id":id1.toString(),
+      "device_id":androidInfo.androidId.toString(),
+      "address":locality.toString(),
+      "device_name":androidInfo.model.toString(),
+      "login_status":1.toString()
+    };
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+    var res = await json.decode(response.body);
+    print("toString()" + response.body.toString());
+    setState(() {
+
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   Future LikeUnLikePost(int postId, int LikeStatus) async {
     EasyLoading.show(status: 'Updating');
@@ -453,6 +547,7 @@ String recentlikeaPerson='';
     print("postId.toString()" + postId.toString());
     setState(() {
      // likes = res['response_likes'];
+      GetFollowingAllPost();
       /*loading = true;*/
     });
 
@@ -466,34 +561,7 @@ String recentlikeaPerson='';
     }
   }
 
-  Future GetFriedsAllPost() async {
-    EasyLoading.show(status: 'Updating');
-    var api = Uri.parse("https://vinsta.ggggg.in.net/api/friendsImages");
-    var id1 = await HelperFunctions.getVStarUniqueIdkey();
-    Map mapeddate = {
-      "user_id": id1.toString(),
-    };
 
-    final response = await http.post(
-      api,
-      body: mapeddate,
-    );
-    var res = await json.decode(response.body);
-    print("UploadPosts2" + response.body);
-    setState(() {
-      allFriendsposts = res['response_friend_img'];
-      loading = true;
-    });
-
-    try {
-      if (response.statusCode == 200) {
-        EasyLoading.dismiss();
-        Fluttertoast.showToast(msg: 'Updated');
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 
   Future<void> share() async {
     await FlutterShare.share(
@@ -516,15 +584,17 @@ String recentlikeaPerson='';
 
   Future<void> _pullRefresh() async {
     setState(() {
-      GetFriedsAllPost();
+
       GetFollowingAllPost();
     });
   }
 
   @override
   void initState() {
-    GetLikeDislikeStatus();
-    GetFriedsAllPost();
+
+
+    _getGeoLocationPosition();
+    GetAddressFromLatLong();
     getUserDetails();
     GetFollowingAllPost();
     super.initState();
@@ -651,7 +721,7 @@ String recentlikeaPerson='';
                         Row(
                           children: [
                             IconButton(
-                              icon: fill
+                              icon: allFollowersposts[index]['like_status'] == 0 || allFollowersposts[index]['like_status']==null
                                   ? FaIcon(FontAwesomeIcons.heart)
                                   : FaIcon(
                                       FontAwesomeIcons.solidHeart,
@@ -661,7 +731,7 @@ String recentlikeaPerson='';
                                 setState(() {LikeCountPerson(allFollowersposts[index]['id']);
                                   recentLikePerson(
                                       allFollowersposts[index]['id']);
-                                  if (fill == true) {
+                                  if (allFollowersposts[index]['like_status'] == 0 || allFollowersposts[index]['like_status']==null) {
                                     fill == false;
                                   } else {
                                     fill == true;
@@ -697,7 +767,7 @@ String recentlikeaPerson='';
                               },
                               icon: Icon(Icons.chat_bubble_outline),
                             ),
-                            IconButton(
+                          /*  IconButton(
                               onPressed: () {
                                 setState(() {
                                   onshareBottomSheet();
@@ -706,7 +776,7 @@ String recentlikeaPerson='';
                               icon: Icon(
                                 CupertinoIcons.paperplane,
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
 
@@ -855,315 +925,7 @@ String recentlikeaPerson='';
                     );
                   }),
             ),
-            /*Friends Post List Starting*/
-            Container(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemCount:
-                      allFriendsposts == null ? 0 : allFriendsposts.length,
-                  itemBuilder: (BuildContext, int index) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, right: 16, top: 5, bottom: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  // profile photo
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.push(context,
-                                          MaterialPageRoute(builder: (context) {
-                                        return ProfileInfo(
-                                          user_id: allFriendsposts[index]
-                                              ['friend_id'],
-                                        );
-                                      }));
-                                    },
-                                    child: ClipOval(
-                                      child: loading != true
-                                          ? Container(
-                                              height: 20,
-                                              width: 20,
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            )
-                                          : Image.network(
-                                              allFriendsposts[index]
-                                                          ['userphoto'] !=
-                                                      null
-                                                  ? allFriendsposts[index]
-                                                          ['userphoto']
-                                                      .toString()
-                                                  : "No Image Found",
-                                              width: 40,
-                                              height: 40,
-                                              fit: BoxFit.cover,
-                                            ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  // name
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        allFriendsposts[index]['user_name'],
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      Text(
-                                        "Lucknow, Uttar Pradesh",
-                                        style: TextStyle(),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              InkWell(
-                                child: Icon(Icons.more_vert),
-                                onTap: () {
-                                  onoptionsBottomSheet();
-                                },
-                              )
-                            ],
-                          ),
-                        ),
 
-                        // post
-                        Container(
-                          height: 450,
-                          //color: Colors.grey[300],
-                          decoration: BoxDecoration(
-                            //color: Colors.grey[300],
-                            //shape: BoxShape.circle,
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                    allFriendsposts[index]['post_image'])),
-                          ),
-                        ),
-
-                        // below the post -> buttons and comments
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: fill
-                                  ? FaIcon(FontAwesomeIcons.heart)
-                                  : FaIcon(
-                                      FontAwesomeIcons.solidHeart,
-                                      color: Colors.red,
-                                    ),
-                              onPressed: () {
-                                setState(() {
-                                  LikeCountPerson(allFriendsposts[index]['id']);
-                                  recentLikePerson(
-                                      allFriendsposts[index]['id']);
-
-                                  if (fill == true) {
-                                    fill == false;
-                                  } else {
-                                    fill == true;
-                                  }
-                                  print("bool::::" + fill.toString());
-                                  fill = !fill;
-
-                                  if (fill == false) {
-                                    status = 0;
-                                  } else {
-                                    status = 1;
-                                  }
-                                  print("fill:" + fill.toString());
-                                  print(status);
-                                  LikeUnLikePost(
-                                      allFriendsposts[index]['id'], status);
-                                });
-                              },
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => CommentScreen(
-                                              id: allFriendsposts[index]['id'],
-                                              friendId: allFriendsposts[index]
-                                                  ['friend_id'],
-                                              followingId: 0,
-                                            )));
-                              },
-                              icon: Icon(Icons.chat_bubble_outline),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  onshareBottomSheet();
-                                });
-                              },
-                              icon: Icon(
-                                CupertinoIcons.paperplane,
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // like by...
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0),
-                          child: Row(children: [
-                            Text('Liked by '),
-                            Text(
-                              recentlikeaPerson.toString(),
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            Text(' and '),
-                            InkWell(onTap:(){
-                              Navigator.push(context,MaterialPageRoute(builder: (context)=>allUSerLikesScreen(postId:  allFriendsposts[index]
-                              ['id'],)));
-                            },
-                              child: Text(
-                                  '${likeCount.toString()} others',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ]),
-                        ),
-
-                        // caption
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0, top: 8),
-                          child: RichText(
-                            text: TextSpan(
-                              style: TextStyle(color: Colors.black),
-                              children: [
-                                TextSpan(
-                                    text:
-                                        '${allFriendsposts[index]['user_name']}  ',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
-                                TextSpan(
-                                    text: allFriendsposts[index]['content']),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10.0, top: 8),
-                          child: InkWell(onTap:(){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CommentScreen(
-                                      id: allFriendsposts[index]['id'],
-                                      friendId: allFriendsposts[index]
-                                      ['friend_id'],
-                                      followingId: 0,
-                                    )));
-                          },
-                            child: RichText(
-                              text: TextSpan(
-                                style: TextStyle(color: Colors.black),
-                                children: [
-                                  TextSpan(
-                                      text: "view all 95 comments",
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, right: 10.0, top: 5),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ClipOval(
-                                child: UserImageloading != true
-                                    ? Container(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(),
-                                      )
-                                    : Image.network(
-                                        ImagelUrl != null
-                                            ? ImagelUrl.toString()
-                                            : "No Image Found",
-                                        width: 40,
-                                        height: 40,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                              Container(
-                                height: 30,
-                                width: 260,
-                                child: TextFormField(
-                                  controller: postText,
-                                  decoration: InputDecoration(
-                                      enabledBorder: const OutlineInputBorder(
-                                        // width: 0.0 produces a thin "hairline" border
-                                        borderSide: const BorderSide(
-                                            color: Colors.white, width: 0.0),
-                                      ),
-                                      contentPadding:
-                                          EdgeInsets.only(top: 10, left: 10),
-                                      fillColor: Colors.white,
-                                      filled: true,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          15,
-                                        ),
-                                      ),
-                                      hintText: 'Add a comment',
-                                      hintStyle: TextStyle(
-                                          fontSize: 12, color: Colors.grey)),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    /* print('allFollowersposts[index][]:' +
-                                        allFollowersposts[index]
-                                            ['following_id']);*/
-                                    postText.text.toString().isNotEmpty
-                                        ? PostComment(
-                                            0,
-                                            allFriendsposts[index]['friend_id'],
-                                            allFriendsposts[index]['id'])
-                                        : print('null');
-                                  });
-                                  /*    postText.clear();*/
-                                },
-                                child: Text(
-                                  'post',
-                                  style:
-                                      TextStyle(color: Colors.lightBlueAccent),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, top: 2, bottom: 10),
-                          child: Text(
-                            '41 minutes ago',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        )
-                      ],
-                    );
-                  }),
-            ),
-            /*Friends Post List Ending*/
             SizedBox(
               height: 180,
             ),
@@ -1330,7 +1092,7 @@ String recentlikeaPerson='';
         });
   }
 
-  void onshareBottomSheet() {
+/*  void onshareBottomSheet() {
     showModalBottomSheet(
         context: context,
         shape: RoundedRectangleBorder(
@@ -1515,11 +1277,11 @@ String recentlikeaPerson='';
                                               children: [
                                                 InkWell(
                                                   onTap: () {
-                                                    /*   Navigator.push(
+                                                    *//*   Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                ProfileInfo()));*/
+                                                                ProfileInfo()));*//*
                                                   },
                                                   child: Container(
                                                     width: 40,
@@ -1571,5 +1333,269 @@ String recentlikeaPerson='';
                 });
               });
         });
+  }*/
+}
+
+
+class PopularTabView extends StatefulWidget {
+  const PopularTabView({Key? key}) : super(key: key);
+
+  @override
+  State<PopularTabView> createState() => _PopularTabViewState();
+}
+
+class _PopularTabViewState extends State<PopularTabView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      body:  GridView.builder(
+        itemCount:40,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount:  2 ),
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            child: GridTile(
+              footer:Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
+              ),
+              child:   Stack(children: [
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset('assets/2.jpg',fit: BoxFit.fill,),
+                  ),
+                ),Padding(
+                  padding: const EdgeInsets.only(left: 5.0,top: 110),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [  Text('V Code',style: GoogleFonts.rye(color: Colors.white)),
+            Text('Name of User',style: GoogleFonts.rye(color: Colors.white),),
+
+
+
+                    ],
+                  ),
+                ),
+
+              ],), //just for testing, will fill with image later
+            ),
+          );
+        },
+      ),
+
+
+    );
   }
 }
+class NearbyView extends StatefulWidget {
+  const NearbyView({Key? key}) : super(key: key);
+
+  @override
+  State<NearbyView> createState() => _NearbyViewState();
+}
+
+class _NearbyViewState extends State<NearbyView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      body:  GridView.builder(
+        itemCount:40,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount:  2 ),
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            child: GridTile(
+              footer:Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
+              ),
+              child:   Stack(children: [
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset('assets/2.jpg',fit: BoxFit.fill,),
+                  ),
+                ),Padding(
+                  padding: const EdgeInsets.only(left: 5.0,top: 110),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [  Text('V Code',style: GoogleFonts.rye(color: Colors.white)),
+                      Text('Name of User',style: GoogleFonts.rye(color: Colors.white),),
+
+
+
+                    ],
+                  ),
+                ),
+
+              ],), //just for testing, will fill with image later
+            ),
+          );
+        },
+      ),
+
+
+    );
+  }
+}
+class FollowingView extends StatefulWidget {
+  const FollowingView({Key? key}) : super(key: key);
+
+  @override
+  State<FollowingView> createState() => _FollowingViewState();
+}
+
+class _FollowingViewState extends State<FollowingView> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      body:  GridView.builder(
+        itemCount:40,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount:  2 ),
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            child: GridTile(
+              footer:Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
+              ),
+              child:   Stack(children: [
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset('assets/2.jpg',fit: BoxFit.fill,),
+                  ),
+                ),Padding(
+                  padding: const EdgeInsets.only(left: 5.0,top: 110),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [  Text('V Code',style: GoogleFonts.rye(color: Colors.white)),
+                      Text('Name of User',style: GoogleFonts.rye(color: Colors.white),),
+
+
+
+                    ],
+                  ),
+                ),
+
+              ],), //just for testing, will fill with image later
+            ),
+          );
+        },
+      ),
+
+
+    );
+  }
+}
+class Suggestion extends StatefulWidget {
+  const Suggestion({Key? key}) : super(key: key);
+
+  @override
+  State<Suggestion> createState() => _SuggestionState();
+}
+
+class _SuggestionState extends State<Suggestion> {
+  bool loading = false;
+  List SugeestedFriendList = [];
+  Future SuggetionList() async {
+    EasyLoading.show(status: 'Loading...');
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/suggestion_list");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {"user_id": id1.toString()};
+
+    final response = await http.post(api, body: mapeddate);
+
+    var res = await json.decode(response.body);
+    //print("UploadPosts" + response.body);
+    setState(() {
+      SugeestedFriendList = res['response_Suggestion'];
+      loading = true;
+
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        EasyLoading.dismiss();
+        Fluttertoast.showToast(msg: 'Updated');
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+  @override
+  void initState() {
+    SuggetionList();
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      body:  GridView.builder(
+        itemCount:40,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount:  2 ),
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            child: GridTile(
+              footer:Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
+              ),
+              child:   Stack(children: [
+                Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: loading != true
+                        ? Container(
+                      child: Center(
+                        child:
+                        CircularProgressIndicator(),
+                      ),
+                    )
+                        : Image.network(
+                      SugeestedFriendList[index]
+                      ['userphoto']
+                          .toString(),
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),Padding(
+                  padding: const EdgeInsets.only(left: 5.0,top: 110),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [  Text(  SugeestedFriendList[index]
+                    ['user_name'],style: GoogleFonts.rye(color: Colors.white)),
+                      Text( SugeestedFriendList[index]
+                      ['user_code'],style: GoogleFonts.rye(color: Colors.white),),
+
+
+
+                    ],
+                  ),
+                ),
+
+              ],), //just for testing, will fill with image later
+            ),
+          );
+        },
+      ),
+
+
+    );
+  }
+}
+
+

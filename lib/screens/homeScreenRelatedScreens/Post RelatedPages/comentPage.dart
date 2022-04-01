@@ -45,8 +45,8 @@ class _CommentScreenState extends State<CommentScreen> {
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
       "user_id": id1.toString(),
-      "following_id": following_id.toString(),
-      "friend_id": friend_id.toString(),
+     /* "following_id": following_id.toString(),
+      "friend_id": friend_id.toString(),*/
       "postImage_id": postImage_id.toString(),
       "comment": postText.text.toString()
     };

@@ -82,7 +82,7 @@ class _EditProfilePic2State extends State<EditProfilePic2> {
     var uploadUrl =
         Uri.parse("https://vinsta.ggggg.in.net/api/userProfileImage");
     var requestMulti = http.MultipartRequest('POST', uploadUrl);
-    requestMulti.fields['user_id'] = id.toString();
+    requestMulti.fields['id'] = id.toString();
     if (imageFile != null) {
       requestMulti.files
           .add(await http.MultipartFile.fromPath('userphoto', imageFile!.path));

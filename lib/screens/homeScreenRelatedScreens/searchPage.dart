@@ -50,7 +50,7 @@ class _SearchScreenState extends State<SearchScreen> {
     }
   }
 
-  Future AddFriendUnfriend(int followingId, int status) async {
+  /*Future AddFriendUnfriend(int followingId, int status) async {
     EasyLoading.show(status: 'Loading...');
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/addFriends");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
@@ -76,9 +76,13 @@ class _SearchScreenState extends State<SearchScreen> {
     } catch (e) {
       print(e);
     }
-  }
+  }*/
 
   Future FollowUnfollow(int followingId, int status) async {
+    print('followingId'+followingId.toString());
+    print('status'+status.toString());
+
+
     EasyLoading.show(status: 'Loading...');
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/follow_Store");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
@@ -94,7 +98,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
     var res = await json.decode(response.body);
     // print("UploadPosts1" + response.body);
-    setState(() {});
+    setState(() {
+      SuggetionList();
+    });
 
     try {
       if (response.statusCode == 200) {
@@ -359,66 +365,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                         SizedBox(
                                           width: 5,
                                         ),
-                                        friendList[index]
-                                        ['status_friend'] ==
-                                            0
-                                            ? FlatButton(color: Colors.blue,
-                                            onPressed: () {
-                                              setState(() {
-                                                if (friendList[index]
-                                                ['status_friend'] ==
-                                                    0) {
-                                                  statusbool = false;
-                                                } else {
-                                                  statusbool = true;
-                                                }
-                                                statusbool = !statusbool;
-                                                if (statusbool == false) {
-                                                  status = 0;
-                                                } else {
-                                                  status = 1;
-                                                }
-                                              });
-                                              print(status);
-                                              AddFriendUnfriend(
-                                                  friendList[index]
-                                                  ['user_id'],
-                                                  status);
-                                              SuggetionList();
-                                            },
-                                            child: Text('Add Friend',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white
-                                                )))
-                                            : FlatButton(color: Colors.blue,
-                                            onPressed: () {
-                                              setState(() {
-                                                if (friendList[index]
-                                                ['status_friend'] ==
-                                                    0) {
-                                                  statusbool = false;
-                                                } else {
-                                                  statusbool = true;
-                                                }
-                                                statusbool = !statusbool;
-                                                if (statusbool == false) {
-                                                  status = 0;
-                                                } else {
-                                                  status = 1;
-                                                }
-                                              });
-                                              print(status);
-                                              AddFriendUnfriend(
-                                                  friendList[index]
-                                                  ['user_id'],
-                                                  status);
-                                              SuggetionList();
-                                            },
-                                            child: Text('Unfriend',
-                                                style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.white)))
+
                                       ],
                                     ),
                                   ],
@@ -444,11 +391,12 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ListTile(
                                     leading: InkWell(
                                       onTap: () {
-                                       /* Navigator.push(
+                                        Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>
-                                                    ProfileInfo()));*/
+                                                    ProfileInfo(user_id:    SugeestedFriendList[index]
+                                                    ['id'],)));
                                       },
                                       child: ClipOval(
                                         child: loading != true
@@ -506,9 +454,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 print(status);
                                                 FollowUnfollow(
                                                     SugeestedFriendList[index]
-                                                        ['user_id'],
+                                                        ['id'],
                                                     status);
-                                                SuggetionList();
+
                                               },
                                             ),
                                           )
@@ -549,9 +497,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 print(status);
                                                 FollowUnfollow(
                                                     SugeestedFriendList[index]
-                                                        ['user_id'],
+                                                        ['id'],
                                                     status);
-                                                SuggetionList();
+
                                               },
                                             ),
                                           ),
@@ -647,66 +595,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                             SizedBox(
                                               width: 5,
                                             ),
-                                            SugeestedFriendList[index]
-                                            ['status_friend'] ==
-                                                0
-                                                ? FlatButton(color: Colors.blue,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    if (SugeestedFriendList[index]
-                                                    ['status_friend'] ==
-                                                        0) {
-                                                      statusbool = false;
-                                                    } else {
-                                                      statusbool = true;
-                                                    }
-                                                    statusbool = !statusbool;
-                                                    if (statusbool == false) {
-                                                      status = 0;
-                                                    } else {
-                                                      status = 1;
-                                                    }
-                                                  });
-                                                  print(status);
-                                                  AddFriendUnfriend(
-                                                      SugeestedFriendList[index]
-                                                      ['user_id'],
-                                                      status);
-                                                  SuggetionList();
-                                                },
-                                                child: Text('Add Friend',
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.white
-                                                      )))
-                                                : FlatButton(color: Colors.blue,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    if (SugeestedFriendList[index]
-                                                    ['status_friend'] ==
-                                                        0) {
-                                                      statusbool = false;
-                                                    } else {
-                                                      statusbool = true;
-                                                    }
-                                                    statusbool = !statusbool;
-                                                    if (statusbool == false) {
-                                                      status = 0;
-                                                    } else {
-                                                      status = 1;
-                                                    }
-                                                  });
-                                                  print(status);
-                                                  AddFriendUnfriend(
-                                                      SugeestedFriendList[index]
-                                                      ['user_id'],
-                                                      status);
-                                                  SuggetionList();
-                                                },
-                                                child: Text('Unfriend',
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.white)))
+
                                           ],
                                         ),
                                       ],

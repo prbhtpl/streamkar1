@@ -5,6 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:untitled/bottomNavigationBar/bottomNavigation.dart';
 
 import 'package:untitled/screens/recordVideoScreens/recordVideo.dart';
@@ -68,7 +69,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(builder: EasyLoading.init() ,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
+      theme: ThemeData(primaryTextTheme: GoogleFonts.comicNeueTextTheme(),
         primarySwatch: Colors.blue,
       ),
       home: AnimatedSplashScreen(

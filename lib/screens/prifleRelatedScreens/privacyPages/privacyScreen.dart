@@ -47,7 +47,7 @@ class _privacyScreenState extends State<privacyScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
+            /*  Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'Account Privacy',
@@ -56,7 +56,8 @@ class _privacyScreenState extends State<privacyScreen> {
               ),
               InkWell(
                 onTap: () {
-                  /* Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile()));*/
+                  */
+              /* Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile()));*//*
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -212,7 +213,7 @@ class _privacyScreenState extends State<privacyScreen> {
                 color: Colors.grey.shade100,
                 thickness: 6,
                 height: 10,
-              ),
+              ),*/
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(

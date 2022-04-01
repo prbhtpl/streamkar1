@@ -31,7 +31,7 @@ class _ReelVideosState extends State<ReelVideos> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 1,
       child: Scaffold(
         body: SafeArea(
           child: Column(
@@ -66,15 +66,10 @@ class _ReelVideosState extends State<ReelVideos> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      'Status',
+                                      'Status',style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 15),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      'Squad',
-                                    ),
-                                  ),
+
                                 ],
                               ),
                             ),
@@ -112,7 +107,7 @@ class _ReelVideosState extends State<ReelVideos> {
                             dragStartBehavior: DragStartBehavior.start,
                             children: [
                               Status(),
-                              Text('2'),
+
                             ]),
                       ),
                     ],
