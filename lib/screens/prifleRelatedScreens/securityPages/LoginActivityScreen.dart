@@ -83,7 +83,7 @@ class _LoginActivityScreenState extends State<LoginActivityScreen> {
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
                 child: Text(
-                  'Where your are logged In',
+                  loginActivity[index]['address'].toString(),
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
               ),

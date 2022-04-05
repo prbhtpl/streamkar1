@@ -170,6 +170,8 @@ class _LogginScreenState extends State<LogginScreen> {
 Future init()async{
     final username=await UserSecureStorage.getUsername()??'';
     final password=await UserSecureStorage.getPassword()??'';
+    print("username"+username.toString());
+    print("password"+password.toString());
     setState(() {
       this.email.text=username;
       this.password.text=password;
@@ -316,10 +318,13 @@ Future init()async{
                                               fontWeight: FontWeight.bold),
                                         ),
                                         onPressed: () async{
-                                          await UserSecureStorage.setUserName(email.text);
-                                          await UserSecureStorage.setPassword(password.text);
+                                          await UserSecureStorage.setUserName(email.text.toString());
+                                          await UserSecureStorage.setPassword(password.text.toString());
                                           //  signIn();
                                           loginMethod();
+
+
+
                                         },
                                       ),
                                     ),

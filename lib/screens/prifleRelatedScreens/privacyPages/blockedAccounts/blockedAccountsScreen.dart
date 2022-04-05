@@ -69,7 +69,7 @@ class _BlockAccountScreenState extends State<BlockAccountScreen> {
       if (response.statusCode == 200) {
         setState(() {
 
-         /* UsersList();*/
+          UsersList();
         });
 
         EasyLoading.dismiss();
@@ -146,7 +146,7 @@ class _BlockAccountScreenState extends State<BlockAccountScreen> {
                       ),
                     )
                         : Image.network(
-                      AllBlockUsersList[index]['userphoto'].toString(),
+                      AllBlockUsersList[index]['userphoto']==null?'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745':  AllBlockUsersList[index]['userphoto'].toString(),
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,

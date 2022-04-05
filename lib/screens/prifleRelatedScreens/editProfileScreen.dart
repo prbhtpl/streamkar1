@@ -250,17 +250,12 @@ class _EditProfileState extends State<EditProfile> {
 
   Future insertDataToProfile() async {
     EasyLoading.show(status: 'Updating...');
-    if (EditedName.text.isEmpty || Introduction.text.isEmpty) {
-      setState(() {
-        EditedName.text=name;
 
-
-        Introduction.text=introduction;
-      });
-    } else {
-      EditedName.text.toString();
-     /* Dob.text.toString();*/
-      Introduction.text.toString();
+    if(EditedName.text.isEmpty){
+      EditedName.text=name;
+    }
+    if(Introduction.text.isEmpty){
+      Introduction.text=introduction;
     }
     if(Dob.text.isEmpty){
       Dob.text=dob.toString();
@@ -441,11 +436,11 @@ class _EditProfileState extends State<EditProfile> {
                             keyboardType: TextInputType.text,
                             decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: name.toString()),
+                                hintText: name.toString(),hintStyle: TextStyle(color:Colors.grey)),
                           )),
                     ],
                   ),
-                  Icon(CupertinoIcons.right_chevron)
+
                 ],
               ),
             ),

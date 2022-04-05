@@ -105,10 +105,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 HelperFunctions.saveuserLoggedInSharedPreference(true);
 
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => BottomNavigation(screenId: 0)));
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => LogginScreen(toggle: widget.toggle),
+                  ),
+                );
               }
             });
             /*<================= FIREBASE CODE=====================>*/
@@ -126,9 +127,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             setState(() {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                    builder: (context) => BottomNavigation(
-                          screenId: 0,
-                        )),
+                  builder: (context) => LogginScreen(toggle: widget.toggle),
+                ),
               );
             });
           }

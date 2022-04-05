@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Fresher',
-                                      style: TextStyle(color: Colors.white,
+                                      style: TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -82,7 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Popular',
-                                      style: TextStyle(color: Colors.white,
+                                      style: TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -92,7 +93,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Nearby',
-                                      style: TextStyle(color: Colors.white,
+                                      style: TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -102,7 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Following',
-                                      style: TextStyle(color: Colors.white,
+                                      style: TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -112,7 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         top: 8.0, bottom: 5, left: 2, right: 2),
                                     child: Text(
                                       'Suggestion',
-                                      style: TextStyle(color: Colors.white,
+                                      style: TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18),
                                     ),
@@ -185,57 +189,61 @@ class BannerSlider extends StatefulWidget {
 }
 
 class _BannerSliderState extends State<BannerSlider> {
-  bool bannerloading=false;
+  bool bannerloading = false;
   String image = '';
-  List Banner=[];
+  List Banner = [];
   Future getAllBanner() async {
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/bannerget");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
 
-
     final response = await http.get(
       api,
-
     );
 
     var res = await json.decode(response.body);
     print("hererere" + response.body);
     setState(() {
-Banner=res['response_bannerlist'];
-bannerloading=true;
+      Banner = res['response_bannerlist'];
+      bannerloading = true;
     });
 
     try {
-      if (response.statusCode == 200) {
-
-      }
+      if (response.statusCode == 200) {}
     } catch (e) {
       print(e);
     }
   }
+
   @override
   void initState() {
     getAllBanner();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return CarouselSlider(
       items: [
         for (var i = 0; i < Banner.length; i++)
-          bannerloading?Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(Banner[i]['banner_img'].toString(), fit: BoxFit.fitWidth),
-            ),
-          ):Container(child: Center(child: CircularProgressIndicator(color: Colors.pinkAccent,),),)
-
-
-
+          bannerloading
+              ? Container(
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(Banner[i]['banner_img'].toString(),
+                        fit: BoxFit.fitWidth),
+                  ),
+                )
+              : Container(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.pinkAccent,
+                    ),
+                  ),
+                )
       ],
       options: CarouselOptions(
         enlargeCenterPage: true,
@@ -264,12 +272,12 @@ class _FresherTabViewState extends State<FresherTabView> {
   bool loading = false;
   bool UserImageloading = false;
   List allFollowersposts = [];
-  String locality='';
+  String locality = '';
   List likes = [];
   List getLikeUnlike = [];
   int status = 0;
   int likeCount = 0;
-String recentlikeaPerson='';
+  String recentlikeaPerson = '';
   bool fill = false;
   Future PostComment(
     int following_id,
@@ -303,6 +311,7 @@ String recentlikeaPerson='';
       print(e);
     }
   }
+
   Future LikeCountPerson(int photoId) async {
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/likeCount");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
@@ -316,9 +325,7 @@ String recentlikeaPerson='';
     var res = await json.decode(response.body);
     print("hererere1" + response.body);
     setState(() {
-      likeCount=res['response_like_count'];
-
-
+      likeCount = res['response_like_count'];
     });
 
     try {
@@ -329,10 +336,11 @@ String recentlikeaPerson='';
       print(e);
     }
   }
+
   Future recentLikePerson(int photoId) async {
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/likeRecentName");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
-    print("recentlikeaPerson"+photoId.toString());
+    print("recentlikeaPerson" + photoId.toString());
     Map mapeddate = {"id": photoId.toString()};
 
     final response = await http.post(
@@ -343,9 +351,8 @@ String recentlikeaPerson='';
     var res = await json.decode(response.body);
     print("hererere1" + response.body);
     setState(() {
-      recentlikeaPerson=res['response_recentlikes'][0]['user_name'].toString();
-
-
+      recentlikeaPerson =
+          res['response_recentlikes'][0]['user_name'].toString();
     });
 
     try {
@@ -358,7 +365,6 @@ String recentlikeaPerson='';
   }
 
   Future getUserDetails() async {
-
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/profileGet");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {"user_id": id1.toString()};
@@ -412,7 +418,7 @@ String recentlikeaPerson='';
     setState(() {
       getLikeUnlike = res['response_imagelikes'];
       */
-  /* loading = true;*//*
+  /* loading = true;*/ /*
     });
 
     try {
@@ -449,19 +455,19 @@ String recentlikeaPerson='';
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
   }
+
   Future<void> GetAddressFromLatLong() async {
     Position position = await _getGeoLocationPosition();
     List<Placemark> placemarks =
-    await placemarkFromCoordinates(position.latitude, position.longitude);
+        await placemarkFromCoordinates(position.latitude, position.longitude);
     // print(placemarks);
     Placemark place = placemarks[0];
 
     setState(() {
-      locality =
-      ' ${place.subLocality} ${place.subAdministrativeArea}';
+      locality = ' ${place.subLocality} ${place.subAdministrativeArea}';
       LoginActivity();
     });
-    print( ' ${place.locality} ${place.subLocality}');
+    print(' ${place.locality} ${place.subLocality}');
   }
 
   Future GetFollowingAllPost() async {
@@ -492,21 +498,22 @@ String recentlikeaPerson='';
       print(e);
     }
   }
+
   Future LoginActivity() async {
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  print(   "address"+locality.toString());
-  print(   "device_name"+androidInfo.model.toString());
+    print("address" + locality.toString());
+    print("device_name" + androidInfo.model.toString());
 
     EasyLoading.show(status: 'Updating');
 
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/loginActivityPost");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
-      "user_id":id1.toString(),
-      "device_id":androidInfo.androidId.toString(),
-      "address":locality.toString(),
-      "device_name":androidInfo.model.toString(),
-      "login_status":1.toString()
+      "user_id": id1.toString(),
+      "device_id": androidInfo.androidId.toString(),
+      "address": locality.toString(),
+      "device_name": androidInfo.model.toString(),
+      "login_status": 1.toString()
     };
 
     final response = await http.post(
@@ -515,9 +522,7 @@ String recentlikeaPerson='';
     );
     var res = await json.decode(response.body);
     print("toString()" + response.body.toString());
-    setState(() {
-
-    });
+    setState(() {});
 
     try {
       if (response.statusCode == 200) {
@@ -546,7 +551,7 @@ String recentlikeaPerson='';
     var res = await json.decode(response.body);
     print("postId.toString()" + postId.toString());
     setState(() {
-     // likes = res['response_likes'];
+      // likes = res['response_likes'];
       GetFollowingAllPost();
       /*loading = true;*/
     });
@@ -560,8 +565,6 @@ String recentlikeaPerson='';
       print(e);
     }
   }
-
-
 
   Future<void> share() async {
     await FlutterShare.share(
@@ -584,15 +587,12 @@ String recentlikeaPerson='';
 
   Future<void> _pullRefresh() async {
     setState(() {
-
       GetFollowingAllPost();
     });
   }
 
   @override
   void initState() {
-
-
     _getGeoLocationPosition();
     GetAddressFromLatLong();
     getUserDetails();
@@ -660,12 +660,12 @@ String recentlikeaPerson='';
                                             )
                                           : Image.network(
                                               allFollowersposts[index]
-                                                          ['userphoto'] !=
+                                                          ['userphoto'] ==
                                                       null
-                                                  ? allFollowersposts[index]
+                                                  ? 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                                                  : allFollowersposts[index]
                                                           ['userphoto']
-                                                      .toString()
-                                                  : "No Image Found",
+                                                      .toString(),
                                               width: 40,
                                               height: 40,
                                               fit: BoxFit.cover,
@@ -721,20 +721,28 @@ String recentlikeaPerson='';
                         Row(
                           children: [
                             IconButton(
-                              icon: allFollowersposts[index]['like_status'] == 0 || allFollowersposts[index]['like_status']==null
+                              icon: allFollowersposts[index]['like_status'] ==
+                                          0 ||
+                                      allFollowersposts[index]['like_status'] ==
+                                          null
                                   ? FaIcon(FontAwesomeIcons.heart)
                                   : FaIcon(
                                       FontAwesomeIcons.solidHeart,
                                       color: Colors.red,
                                     ),
                               onPressed: () {
-                                setState(() {LikeCountPerson(allFollowersposts[index]['id']);
+                                setState(() {
+                                  LikeCountPerson(
+                                      allFollowersposts[index]['id']);
                                   recentLikePerson(
                                       allFollowersposts[index]['id']);
-                                  if (allFollowersposts[index]['like_status'] == 0 || allFollowersposts[index]['like_status']==null) {
-                                    fill == false;
+                                  if (allFollowersposts[index]['like_status'] ==
+                                          0 ||
+                                      allFollowersposts[index]['like_status'] ==
+                                          null) {
+                                    fill = false;
                                   } else {
-                                    fill == true;
+                                    fill = true;
                                   }
                                   print("bool::::" + fill.toString());
                                   fill = !fill;
@@ -767,7 +775,7 @@ String recentlikeaPerson='';
                               },
                               icon: Icon(Icons.chat_bubble_outline),
                             ),
-                          /*  IconButton(
+                            /*  IconButton(
                               onPressed: () {
                                 setState(() {
                                   onshareBottomSheet();
@@ -790,10 +798,17 @@ String recentlikeaPerson='';
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             Text(' and '),
-                            InkWell(onTap:(){
-                              Navigator.push(context,MaterialPageRoute(builder: (context)=>allUSerLikesScreen(postId: allFollowersposts[index]
-                              ['id'],)));
-                            },
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            allUSerLikesScreen(
+                                              postId: allFollowersposts[index]
+                                                  ['id'],
+                                            )));
+                              },
                               child: Text(
                                 '${likeCount.toString()} others',
                                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -822,19 +837,19 @@ String recentlikeaPerson='';
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0, top: 8),
-                          child: InkWell(onTap:(){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CommentScreen(
-                                      id: allFollowersposts[index]
-                                      ['id'],
-                                      followingId:
-                                      allFollowersposts[index]
-                                      ['following_id'],
-                                      friendId: 0,
-                                    )));
-                          },
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CommentScreen(
+                                            id: allFollowersposts[index]['id'],
+                                            followingId:
+                                                allFollowersposts[index]
+                                                    ['following_id'],
+                                            friendId: 0,
+                                          )));
+                            },
                             child: RichText(
                               text: TextSpan(
                                 style: TextStyle(color: Colors.black),
@@ -925,7 +940,6 @@ String recentlikeaPerson='';
                     );
                   }),
             ),
-
             SizedBox(
               height: 180,
             ),
@@ -1277,11 +1291,11 @@ String recentlikeaPerson='';
                                               children: [
                                                 InkWell(
                                                   onTap: () {
-                                                    *//*   Navigator.push(
+                                                    */ /*   Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                             builder: (context) =>
-                                                                ProfileInfo()));*//*
+                                                                ProfileInfo()));*/ /*
                                                   },
                                                   child: Container(
                                                     width: 40,
@@ -1336,7 +1350,6 @@ String recentlikeaPerson='';
   }*/
 }
 
-
 class PopularTabView extends StatefulWidget {
   const PopularTabView({Key? key}) : super(key: key);
 
@@ -1348,48 +1361,54 @@ class _PopularTabViewState extends State<PopularTabView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body:  GridView.builder(
-        itemCount:40,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount:  2 ),
+      body: GridView.builder(
+        itemCount: 40,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
           return Card(
             child: GridTile(
-              footer:Padding(
+              footer: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
+                child: ElevatedButton(onPressed: () {}, child: Text('Follow')),
               ),
-              child:   Stack(children: [
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset('assets/2.jpg',fit: BoxFit.fill,),
+              child: Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/2.jpg',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                   ),
-                ),Padding(
-                  padding: const EdgeInsets.only(left: 5.0,top: 110),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [  Text('V Code',style: GoogleFonts.rye(color: Colors.white)),
-            Text('Name of User',style: GoogleFonts.rye(color: Colors.white),),
-
-
-
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5.0, top: 110),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('V Code',
+                            style: GoogleFonts.rye(color: Colors.white)),
+                        Text(
+                          'Name of User',
+                          style: GoogleFonts.rye(color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-
-              ],), //just for testing, will fill with image later
+                ],
+              ), //just for testing, will fill with image later
             ),
           );
         },
       ),
-
-
     );
   }
 }
+
 class NearbyView extends StatefulWidget {
   const NearbyView({Key? key}) : super(key: key);
 
@@ -1401,48 +1420,54 @@ class _NearbyViewState extends State<NearbyView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body:  GridView.builder(
-        itemCount:40,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount:  2 ),
+      body: GridView.builder(
+        itemCount: 40,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
           return Card(
             child: GridTile(
-              footer:Padding(
+              footer: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
+                child: ElevatedButton(onPressed: () {}, child: Text('Follow')),
               ),
-              child:   Stack(children: [
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset('assets/2.jpg',fit: BoxFit.fill,),
+              child: Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/2.jpg',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                   ),
-                ),Padding(
-                  padding: const EdgeInsets.only(left: 5.0,top: 110),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [  Text('V Code',style: GoogleFonts.rye(color: Colors.white)),
-                      Text('Name of User',style: GoogleFonts.rye(color: Colors.white),),
-
-
-
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5.0, top: 110),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('V Code',
+                            style: GoogleFonts.rye(color: Colors.white)),
+                        Text(
+                          'Name of User',
+                          style: GoogleFonts.rye(color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-
-              ],), //just for testing, will fill with image later
+                ],
+              ), //just for testing, will fill with image later
             ),
           );
         },
       ),
-
-
     );
   }
 }
+
 class FollowingView extends StatefulWidget {
   const FollowingView({Key? key}) : super(key: key);
 
@@ -1454,48 +1479,54 @@ class _FollowingViewState extends State<FollowingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body:  GridView.builder(
-        itemCount:40,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount:  2 ),
+      body: GridView.builder(
+        itemCount: 40,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
           return Card(
             child: GridTile(
-              footer:Padding(
+              footer: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
+                child: ElevatedButton(onPressed: () {}, child: Text('Follow')),
               ),
-              child:   Stack(children: [
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset('assets/2.jpg',fit: BoxFit.fill,),
+              child: Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.asset(
+                        'assets/2.jpg',
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                   ),
-                ),Padding(
-                  padding: const EdgeInsets.only(left: 5.0,top: 110),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [  Text('V Code',style: GoogleFonts.rye(color: Colors.white)),
-                      Text('Name of User',style: GoogleFonts.rye(color: Colors.white),),
-
-
-
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5.0, top: 110),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('V Code',
+                            style: GoogleFonts.rye(color: Colors.white)),
+                        Text(
+                          'Name of User',
+                          style: GoogleFonts.rye(color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-
-              ],), //just for testing, will fill with image later
+                ],
+              ), //just for testing, will fill with image later
             ),
           );
         },
       ),
-
-
     );
   }
 }
+
 class Suggestion extends StatefulWidget {
   const Suggestion({Key? key}) : super(key: key);
 
@@ -1519,7 +1550,6 @@ class _SuggestionState extends State<Suggestion> {
     setState(() {
       SugeestedFriendList = res['response_Suggestion'];
       loading = true;
-
     });
 
     try {
@@ -1531,71 +1561,128 @@ class _SuggestionState extends State<Suggestion> {
       print(e);
     }
   }
+
   @override
   void initState() {
     SuggetionList();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body:  GridView.builder(
-        itemCount:40,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount:  2 ),
+      body: GridView.builder(
+        itemCount: SugeestedFriendList == null ? 0 : SugeestedFriendList.length,
+        gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index) {
-          return Card(
-            child: GridTile(
-              footer:Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ElevatedButton(onPressed: (){}, child: Text('Follow')),
-              ),
-              child:   Stack(children: [
-                Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: loading != true
-                        ? Container(
-                      child: Center(
-                        child:
-                        CircularProgressIndicator(),
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ProfileInfo(
+                          user_id: SugeestedFriendList[index]['id'])));
+            },
+            child: Card(
+              child: GridTile(
+                header: Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                          color: Colors.lightGreen,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.lightGreen)),
+                      child: Text(
+                        'Lv 1',
+                        style: TextStyle(fontSize: 10, color: Colors.white),
                       ),
-                    )
-                        : Image.network(
-                      SugeestedFriendList[index]
-                      ['userphoto']
-                          .toString(),
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
                     ),
-                  ),
-                ),Padding(
-                  padding: const EdgeInsets.only(left: 5.0,top: 110),
-                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [  Text(  SugeestedFriendList[index]
-                    ['user_name'],style: GoogleFonts.rye(color: Colors.white)),
-                      Text( SugeestedFriendList[index]
-                      ['user_code'],style: GoogleFonts.rye(color: Colors.white),),
-
-
-
-                    ],
-                  ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                          color: Colors.yellow.shade200,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Colors.yellow.shade200)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(
+                            CupertinoIcons.heart_solid,
+                            color: Colors.red,
+                            size: 10,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            '1',
+                            style: TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        CupertinoIcons.forward_end_alt_fill,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                      onPressed: () {
+                        //   Navigator.push(context, MaterialPageRoute(builder: (context)=>DeepAr()));
+                      },
+                    )
+                  ],
                 ),
-
-              ],), //just for testing, will fill with image later
+                child: Stack(
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: loading != true
+                            ? Container(
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            : Image.network(
+                                SugeestedFriendList[index]['userphoto'] == null
+                                    ? 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                                    : SugeestedFriendList[index]['userphoto']
+                                        .toString(),
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0, top: 150),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(SugeestedFriendList[index]['user_name'],
+                              style: GoogleFonts.rye(color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ), //just for testing, will fill with image later
+              ),
             ),
           );
         },
       ),
-
-
     );
   }
 }
-
-

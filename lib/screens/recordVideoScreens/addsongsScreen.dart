@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,15 +16,21 @@ class addSongs extends StatefulWidget {
 class _addSongsState extends State<addSongs> {
   List item = [];
   List artist=[];
-  AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
-  AudioCache audioCache = AudioCache();
+  AudioPlayer audioPlayer = AudioPlayer();
+
+  AudioPlayerState audioPlayerState = AudioPlayerState.PAUSED;
+  String url = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3';
+
+  /// Optional
+  int timeProgress = 0;
+  int audioDuration = 0;
   String token =
-      'BQDdI4X1uclEbF8sojAM1xaVbR86MG_pRO20HH9OCjYKK9L23EGXyFmcziieBDCoToHsirMy4PvgImzLCnoLzy742WA1Nw1aF3zY_vFoukfjDQKmG4ansQaRCTFEphhuFqBPno2T4fMZFMWyywqX_oirLOTAKJD3NKUvPmw-';
+      'BQDDboyhtL5SBHuIYDd9eLvoLqiEBy8AzvwyNbRHTuRLnBdXaLop77bKFL5GbmO-zN4G7h6EgA7nxv_bxYyHuZTZZ2wGtDaAoMtZg6j7D_BGBlub2Gq6nsetUCUW40hTG_s7Sn6_uHpPPEEyUWQpMykgimDp4zS-sx-GPGuf';
   Future AllSongs() async {
     EasyLoading.show(status: 'Loading...');
 
     var api = Uri.parse(
-      "https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy/tracks?market=ES&limit=10&offset=5",
+      "https://api.spotify.com/v1/tracks?market=ES&ids=7ouMYWpwJ422jRcDASZB7P%2C4VqPOruhp5EdPBeR92t6lQ%2C2takcwOaAZWiXQijPHIx7B",
     );
 
     Map mapeddate = {};
@@ -38,7 +45,7 @@ class _addSongsState extends State<addSongs> {
     print("hererere" + response.body);
     if (response.statusCode == 200) {
       setState(() {
-        item = res['items'];
+        item = res['tracks'];
 
 
 
@@ -48,18 +55,44 @@ class _addSongsState extends State<addSongs> {
 
     EasyLoading.dismiss();
   }
-  play(String url) async {
 
-    int result = await audioPlayer.play('song.mp3');
-    if (result == 1) {
-    print('pllay');
-    }
+  playMusic(String Url1) async {
+    // Add the parameter "isLocal: true" if you want to access a local file
+    await audioPlayer.play(Url1);
+  }
+  pauseMusic() async {
+    await audioPlayer.pause();
   }
 
   @override
   void initState() {
-    AllSongs();
+    audioPlayer.onPlayerStateChanged.listen((AudioPlayerState state) {
+      setState(() {
+        audioPlayerState = state;
+      });
+    });
+    audioPlayer.setUrl(
+        url); // Triggers the onDurationChanged listener and sets the max duration string
+    audioPlayer.onDurationChanged.listen((Duration duration) {
+      setState(() {
+        audioDuration = duration.inSeconds;
+      });
+    });
+    audioPlayer.onAudioPositionChanged.listen((Duration position) async {
+      setState(() {
+        timeProgress = position.inSeconds;
+      });
+    });
+
+     AllSongs();
     super.initState();
+  }
+  @override
+  void dispose() {
+    audioPlayer.release();
+    audioPlayer.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -153,7 +186,18 @@ class _addSongsState extends State<addSongs> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text('See More',
-                          style: TextStyle(fontWeight: FontWeight.bold))
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                  /*    IconButton(
+                          iconSize: 50,
+                          onPressed: () {
+                            audioPlayerState == AudioPlayerState.PLAYING
+                                ? pauseMusic()
+                                : playMusic(url);
+                            setState(() {});
+                          },
+                          icon: Icon(audioPlayerState == AudioPlayerState.PLAYING
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded)),*/
                     ],
                   ),
                 ),
@@ -175,7 +219,7 @@ class _addSongsState extends State<addSongs> {
                                     Container(
                                       height: 50,
                                       width: 50,
-                                      child: Image.asset('assets/logo.jpeg'),
+                                      child: Image.network(item[index]['album']['images'][index]['url'].toString()),
                                       decoration: BoxDecoration(
                                           color: Colors.black26,
                                           border:
@@ -194,27 +238,33 @@ class _addSongsState extends State<addSongs> {
                                         ),
                                       ],
                                     ),
-                                    IconButton(onPressed: (){
-                                    /*  String url=item[index]['preview_url'];*/
-                                      String url='https://thegrowingdeveloper.org/files/audios/quiet-time.mp3?b4869097e4';
-                                      print('url.toString()'+url.toString());
-                                      play(url);
+                                    IconButton(
+                                        iconSize: 50,
+                                        onPressed: () {
 
-                                      setState(() {
-
-                                      });
-                                    },icon:Icon(CupertinoIcons.play_arrow_solid))
+                                          setState(() {
+                                            audioPlayerState == AudioPlayerState.PLAYING
+                                                ? pauseMusic()
+                                                : playMusic(item[index]['preview_url'].toString());
+                                          });
+                                        },
+                                        // ignore: unrelated_type_equality_checks
+                                        icon: Icon(audioPlayerState == AudioPlayerState.PLAYING.index
+                                            ? Icons.pause_rounded
+                                            : Icons.play_arrow_rounded))
                                   ],
                                 ),
                                 SizedBox(
                                   height: 15,
-                                )
+                                ),
+
                               ],
                             );
                           }),
                     ),
                   ),
-                )
+                ),
+
               ],
             ),
           ),

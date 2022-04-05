@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:untitled/screens/inboxPages/inboxSettingScreen.dart';
 import 'package:untitled/screens/loginPage.dart';
 import 'package:untitled/screens/prifleRelatedScreens/editProfileScreen.dart';
@@ -9,6 +10,8 @@ import 'package:untitled/screens/prifleRelatedScreens/securityPages/securityPage
 
 import '../../helper/authenticate.dart';
 import '../../services/auth.dart';
+import 'AboutPage/aboutScreen.dart';
+import 'FaQPageScreen/FaQScreen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({Key? key}) : super(key: key);
@@ -204,7 +207,9 @@ class _SettingScreenState extends State<SettingScreen> {
 
 
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>FaQScreen()));
+              },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
@@ -270,14 +275,18 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 10,
             ),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AboutUsPage()));
+
+
+              },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'About',
+                      'About Us',
 
                     ),
                     Icon(CupertinoIcons.right_chevron)

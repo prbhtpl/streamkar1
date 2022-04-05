@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:untitled/helper/helperFunctions.dart';
 import 'package:untitled/screens/prifleRelatedScreens/Earnings/officialTalentScreen.dart';
+import 'package:untitled/screens/prifleRelatedScreens/MyTaskRelatedScreens/myTaskScreen.dart';
+import 'package:untitled/screens/prifleRelatedScreens/VipRelatedScreen/VipScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/buyGemsRelatedScreens/buyGemsScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/editphotoScreen.dart';
 import 'package:untitled/screens/prifleRelatedScreens/profileInfoScreen.dart';
@@ -42,6 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   int followersCount = 0;
   int? id;
   String _name = '';
+  int? response_totalBeans;
 
   getallPreferences() async {
     var userDetails = await HelperFunctions.getVStarUniqueIdkey();
@@ -250,13 +255,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() { loading = true;
       profile = res['response_getUserProfile'];
       print(profile);
-    if( profile[0]['userphoto']==null){
+   /* if( profile[0]['userphoto']==null){
       ImagelUrl= 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'.toString();
     }else{ ImagelUrl = profile[0]['userphoto'].toString();
 
 
-    }
-   /*  ImagelUrl = profile[0]['userphoto'].toString();*/
+    }*/
+     ImagelUrl = profile[0]['userphoto'].toString();
      name = profile[0]['user_name'].toString();
      region = profile[0]['region'].toString();
       vId = profile[0]['user_code'].toString();
@@ -265,6 +270,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       if (response.statusCode == 200) {
+        HelperFunctions.saveuserNameSharedPreference(
+            profile[0]['user_name'].toString()  );
         Fluttertoast.showToast(msg: 'Updated');
       }
     } catch (e) {
@@ -298,15 +305,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print(e);
     }
   }
+  Future GetTotalNo_ofBeans() async {
 
+    var api = Uri.parse("https://vinsta.ggggg.in.net/api/totalbeans");
+    var id1 = await HelperFunctions.getVStarUniqueIdkey();
+    Map mapeddate = {"user_id": id1.toString()};
+
+    final response = await http.post(
+      api,
+      body: mapeddate,
+    );
+
+    var res = await json.decode(response.body);
+    print("hererere" + response.body);
+    setState(() {
+      response_totalBeans=res['response_totalBeans'];
+    });
+
+    try {
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(msg: 'Updated');
+        loading=true;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
   @override
   void initState() {
+
     getPostPics();
     getallPreferences();
     GetFollowingCount();
     GetFollowersCount();
     GetFriendsCount();
-    getUserDetails();
+    getUserDetails(); GetTotalNo_ofBeans();
     super.initState();
   }
 
@@ -338,7 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             width: 10,
                           ),
                           Text(
-                            '0',
+                           response_totalBeans.toString(),
                             style: TextStyle(fontSize: 18),
                           )
                         ],
@@ -543,48 +576,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue.shade200,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.white),
+                              InkWell(onTap: (){
+
+Navigator.push(context, MaterialPageRoute(builder: (context)=>MyTaskScreen()));
+                              },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.shade200,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.white),
+                                      ),
+                                      child: Icon(
+                                        CupertinoIcons.calendar_badge_minus,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      CupertinoIcons.calendar_badge_minus,
-                                      color: Colors.white,
+                                    SizedBox(
+                                      width: 10,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  SizedBox(width: 80, child: Text('My Tasks')),
-                                ],
+                                    SizedBox(width: 80, child: Text('My Tasks')),
+                                  ],
+                                ),
                               ),
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.deepPurpleAccent.shade200,
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.white),
+                              InkWell(onTap: (){
+
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>VipScreen()));
+                              },
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.deepPurpleAccent.shade200,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: Colors.white),
+                                      ),
+                                      child: Icon(
+                                        CupertinoIcons
+                                            .square_stack_3d_down_dottedline,
+                                        color: Colors.white,
+                                      ),
                                     ),
-                                    child: Icon(
-                                      CupertinoIcons
-                                          .square_stack_3d_down_dottedline,
-                                      color: Colors.white,
+                                    SizedBox(
+                                      width: 10,
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  SizedBox(width: 80, child: Text('Vip')),
-                                ],
+                                    SizedBox(width: 80, child: Text('Vip')),
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -749,9 +792,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         ),
                                       )
                                     : Image.network(
-                                        ImagelUrl != null
-                                            ? ImagelUrl.toString()
-                                            : 'No Image Found',
+                                        ImagelUrl == null
+                                            ? 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'
+                                            : ImagelUrl.toString(),
                                         width: 130,
                                         height: 130,
                                         fit: BoxFit.cover,

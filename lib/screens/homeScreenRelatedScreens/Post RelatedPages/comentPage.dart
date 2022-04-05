@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import '../../../helper/helperFunctions.dart';
 import '../../prifleRelatedScreens/profileInfoScreen.dart';
@@ -366,6 +367,8 @@ class _CommentScreenState extends State<CommentScreen> {
   }
 
   Future InserCommentReply(int commentId) async {
+    print('postText.text.toString()'+postText.text.toString());
+    print('commentId.text.toString()'+commentId.toString());
     var api = Uri.parse("https://vinsta.ggggg.in.net/api/replycommentImage");
     var id1 = await HelperFunctions.getVStarUniqueIdkey();
     Map mapeddate = {
@@ -492,13 +495,15 @@ class _CommentScreenState extends State<CommentScreen> {
                   InkWell(
                     onTap: () {
                       if (postText.text.isNotEmpty) {
-                        if (_focusNode.hasFocus != false) {
+                        /*if (_focusNode.hasFocus == true) {
                           InserCommentReply(commentList[Index]['id']);
                           print('asd');
                         } else {
                           PostComment(
                               widget.followingId, widget.friendId, widget.id);
-                        }
+                        }*/
+                        PostComment(
+                            widget.followingId, widget.friendId, widget.id);
                       } else {
                         print('null');
                       }
@@ -612,11 +617,11 @@ class _CommentScreenState extends State<CommentScreen> {
                           children: [
                             Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(commentList[index]['user_name'])),
+                                child: Text(commentList[index]['user_name'],style: GoogleFonts.actor(fontWeight: FontWeight.bold,fontSize: 18),)),
                             InkWell(
                                 child: Text(
                               commentList[index]['comment'],
-                              style: TextStyle(fontSize: 20),
+                              style: TextStyle(fontSize: 16),
                             )),
                             Row(
                               children: [
@@ -638,7 +643,7 @@ class _CommentScreenState extends State<CommentScreen> {
                                 SizedBox(
                                   width: 10,
                                 ),
-                                InkWell(
+                             /*   InkWell(
                                     onTap: () {
                                       print('lol');
                                       _focusNode.requestFocus();
@@ -652,22 +657,22 @@ class _CommentScreenState extends State<CommentScreen> {
                                       'Reply',
                                       style: TextStyle(
                                           color: Colors.grey, fontSize: 10),
-                                    )),
+                                    )),*/
                               ],
                             ),
-                            InkWell(
+                            /*InkWell(
                               onTap: () {
                                 GetReplyComments(commentList[index]['id']);
                               },
                               child: Align(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  /*${getReplyComments.length}*/ 'View all replies',
+                                  *//*${getReplyComments.length}*//* 'View all replies',
                                   style: TextStyle(
                                       color: Colors.grey, fontSize: 12),
                                 ),
                               ),
-                            ),
+                            ),*/
                           ],
                         ))),
                 Padding(

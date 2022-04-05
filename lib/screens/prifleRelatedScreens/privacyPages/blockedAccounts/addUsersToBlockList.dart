@@ -65,8 +65,6 @@ class _AddUsersToBlockListState extends State<AddUsersToBlockList> {
     var res = await json.decode(response.body);
     print("UploadPosts1111" + response.body);
     setState(() {
-
-
       UsersList();
     });
 
@@ -136,7 +134,7 @@ class _AddUsersToBlockListState extends State<AddUsersToBlockList> {
                               ),
                             )
                           : Image.network(
-                              AllUsersList[index]['userphoto'].toString(),
+                              AllUsersList[index]['userphoto']==null?'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745':  AllUsersList[index]['userphoto'].toString(),
                               width: 50,
                               height: 50,
                               fit: BoxFit.cover,

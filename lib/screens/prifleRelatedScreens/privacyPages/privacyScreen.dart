@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -240,7 +242,7 @@ class _privacyScreenState extends State<privacyScreen> {
                   ),
                 ),
               ),
-              InkWell(
+             /* InkWell(
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>MutedAccounts()));
                 },
@@ -258,7 +260,7 @@ class _privacyScreenState extends State<privacyScreen> {
                     ],
                   ),
                 ),
-              ),
+              ),*/
             ],
           ),
         ),

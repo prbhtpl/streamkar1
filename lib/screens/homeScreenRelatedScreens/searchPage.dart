@@ -409,7 +409,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                             : Image.network(
                                                 SugeestedFriendList[index]
                                                         ['userphoto']
-                                                    .toString(),
+                                                    ==null?'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745':SugeestedFriendList[index]
+                                                ['userphoto'].toString(),
                                                 width: 50,
                                                 height: 50,
                                                 fit: BoxFit.cover,

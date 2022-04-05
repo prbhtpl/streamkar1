@@ -230,7 +230,7 @@ class _RecordVideoState extends State<RecordVideo>
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
-            height: MediaQuery.of(context).size.height / 1.3,
+            height: MediaQuery.of(context).size.height / 1.35,
             width: MediaQuery.of(context).size.width,
             child: Listener(
               onPointerDown: (_) => _pointers++,
@@ -339,9 +339,6 @@ class _RecordVideoState extends State<RecordVideo>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
                   IconButton(
                       icon: const Icon(
                         CupertinoIcons.music_note_2,
@@ -359,8 +356,6 @@ class _RecordVideoState extends State<RecordVideo>
                     onPressed:
                         controller != null ? onFlashModeButtonPressed : null,
                   ),*/
-                ],
-              ),
               // The exposure and focus mode are currently not supported on the web.
               ...!kIsWeb
                   ? <Widget>[
@@ -385,9 +380,7 @@ class _RecordVideoState extends State<RecordVideo>
                 color: Colors.white,
                 onPressed: controller != null ? onAudioModeButtonPressed : null,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+
                   IconButton(
                     onPressed: () {
                       pickVideo();
@@ -407,8 +400,7 @@ class _RecordVideoState extends State<RecordVideo>
                         ? onCaptureOrientationLockButtonPressed
                         : null,
                   ),*/
-                ],
-              ),
+
             ],
           ),
           _flashModeControlRowWidget(),
